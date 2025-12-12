@@ -10,6 +10,7 @@
         background: #0b0b0f;
         color: #e9f3ff;
         font-family: system-ui, Arial, sans-serif;
+        line-height: 1.5;
         margin: 0;
       }
       .logo-canal {
@@ -27,9 +28,12 @@
         padding:12px;
         position: sticky;
         top: 0;
+        z-index: 10;
       }
       nav a { color:#0ff; text-decoration:none; font-weight:600; }
       nav a:hover { color:#8ef; }
+
+      main section { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
       .card {
         background:#121218;
         border:1px solid #1f2a44;
@@ -37,7 +41,6 @@
         box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         margin: 16px auto;
         padding: 20px;
-        max-width: 900px;
       }
       .btn {
         display:inline-block;
@@ -50,6 +53,8 @@
         margin-top:10px;
       }
       .btn:hover { background:#09c; }
+
+      /* Atrapa el cuadrado */
       #game-area {
         width: 400px;
         height: 400px;
@@ -70,27 +75,34 @@
         font-size: 1.25rem;
         color: #fff;
       }
+
+      /* Canvas centrados */
       canvas {
         display:block;
         margin: 16px auto;
         border: 2px solid #234;
         border-radius: 8px;
+        background: #000;
       }
+
+      /* Infografía */
       .infografia {
         background: linear-gradient(135deg, #0af, #09c);
         color: #fff;
         padding: 20px;
         border-radius: 12px;
         text-align: center;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       }
+
       footer {
         text-align:center;
         margin: 24px 0 40px;
         color:#a9b7c6;
-        position: relative;
       }
+
+      /* Versión */
       .version {
         position: fixed;
         bottom: 10px;
@@ -100,8 +112,11 @@
         padding: 6px 10px;
         border-radius: 6px;
         font-size: 0.9rem;
-        opacity: 0.8;
+        opacity: 0.9;
       }
+
+      /* Small helpers */
+      .center { text-align:center; }
     </style>
   </head>
   <body>
@@ -118,18 +133,16 @@
     </header>
 
     <main id="inicio">
-      <section class="hero" style="text-align:center;">
+      <section class="hero center">
         <img src="imagenes/canal.png" alt="Logo de mi canal" class="logo-canal">
         <h1>Hola, soy Delfi</h1>
         <p>Bienvenido a mi página web. Aquí comparto mi canal, mis redes y algunos juegos 🎮</p>
       </section>
 
-      <section id="canal" class="card" style="text-align:center;">
+      <section id="canal" class="card center">
         <h2>🎥 Mi canal de YouTube</h2>
         <p>Visita mi canal para ver mis videos y suscribirte.</p>
-        <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank">
-          👉 Ir a mi canal
-        </a>
+        <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank">👉 Ir a mi canal</a>
       </section>
 
       <!-- Infografía -->
@@ -153,34 +166,39 @@
       <section id="snake" class="card">
         <h2>🐍 Snake</h2>
         <canvas id="snakeGame" width="400" height="400"></canvas>
+        <p class="center" id="snakeScore">Puntos: 0</p>
+        <p class="center" style="font-size:0.9rem;color:#9fb;">Usa las flechas para mover. Si chocas, el juego reinicia.</p>
       </section>
 
       <!-- Space Invaders -->
       <section id="space" class="card">
         <h2>👾 Space Invaders</h2>
         <canvas id="spaceGame" width="400" height="400"></canvas>
+        <p class="center" id="spaceStatus" style="color:#9fb;"></p>
+        <p class="center" style="font-size:0.9rem;color:#9fb;">Flechas para mover, barra espaciadora para disparar.</p>
       </section>
 
-      <section id="contacto" class="card" style="text-align:center;">
+      <section id="contacto" class="card center">
         <h2>📲 Contacto</h2>
         <p><strong>Roblox:</strong> MVTOEP</p>
         <p><strong>Discord:</strong> dealfi_30409</p>
       </section>
     </main>
 
-    <footer>
-      © 2025 Delfi. Todos los derechos reservados.
-    </footer>
+    <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
 
-    <!-- Versión -->
-    <div class="version">v1.0</div>
+    <!-- Versión: incrementada a v1.2 -->
+    <div class="version">v1.2</div>
 
     <script>
-      /* Atrapa el cuadrado */
+      /* ---------------------------
+         Atrapa el cuadrado
+         --------------------------- */
       const square = document.getElementById("square");
       const gameArea = document.getElementById("game-area");
       const scoreDisplay = document.getElementById("score");
       let score = 0;
+
       function moveSquare() {
         const maxX = gameArea.clientWidth - square.clientWidth;
         const maxY = gameArea.clientHeight - square.clientHeight;
@@ -189,36 +207,194 @@
         square.style.left = x + "px";
         square.style.top = y + "px";
       }
+
       square.addEventListener("click", () => {
         score++;
         scoreDisplay.textContent = "Puntos: " + score;
         moveSquare();
       });
+
       setInterval(moveSquare, 2000);
       moveSquare();
 
-      /* Snake */
+      /* ---------------------------
+         Snake (funcional)
+         --------------------------- */
       const canvas = document.getElementById("snakeGame");
       const ctx = canvas.getContext("2d");
       const box = 20;
-      let snake = [{x: 9*box, y: 10*box}];
-      let food = {x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box};
-      let dir;
-      document.addEventListener("keydown", event => {
-        if(event.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
-        else if(event.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
-        else if(event.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
-        else if(event.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
+      let snake = [{ x: 9 * box, y: 10 * box }];
+      let food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+      let dir = null;
+      let snakePoints = 0;
+      const snakeScoreEl = document.getElementById("snakeScore");
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
+        else if (e.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
+        else if (e.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
+        else if (e.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
       });
+
+      function collision(head, array) {
+        for (let i = 0; i < array.length; i++) {
+          if (head.x === array[i].x && head.y === array[i].y) return true;
+        }
+        return false;
+      }
+
+      function resetSnake() {
+        snake = [{ x: 9 * box, y: 10 * box }];
+        dir = null;
+        snakePoints = 0;
+        snakeScoreEl.textContent = "Puntos: 0";
+        food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+      }
+
       function drawSnake() {
-        ctx.clearRect(0,0,400,400);
-        for(let i=0; i<snake.length; i++){
-          ctx.fillStyle = (i===0)? "lime":"white";
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, 400, 400);
+
+        for (let i = 0; i < snake.length; i++) {
+          ctx.fillStyle = i === 0 ? "lime" : "white";
           ctx.fillRect(snake[i].x, snake[i].y, box, box);
         }
+
         ctx.fillStyle = "red";
         ctx.fillRect(food.x, food.y, box, box);
+
         let snakeX = snake[0].x;
         let snakeY = snake[0].y;
-        if(dir==="LEFT") snakeX -= box;
-        if(dir==="UP") snakeY -= box;
+
+        if (dir === "LEFT") snakeX -= box;
+        if (dir === "UP") snakeY -= box;
+        if (dir === "RIGHT") snakeX += box;
+        if (dir === "DOWN") snakeY += box;
+
+        // comer
+        if (snakeX === food.x && snakeY === food.y) {
+          snakePoints++;
+          snakeScoreEl.textContent = "Puntos: " + snakePoints;
+          food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+        } else {
+          snake.pop();
+        }
+
+        const newHead = { x: snakeX, y: snakeY };
+
+        // colisiones con paredes o cola
+        if (snakeX < 0 || snakeY < 0 || snakeX >= 400 || snakeY >= 400 || collision(newHead, snake)) {
+          resetSnake();
+          return;
+        }
+
+        snake.unshift(newHead);
+      }
+
+      setInterval(drawSnake, 100);
+
+      /* ---------------------------
+         Space Invaders (mejorado básico)
+         --------------------------- */
+      const canvas2 = document.getElementById("spaceGame");
+      const ctx2 = canvas2.getContext("2d");
+      let ship = { x: 180, y: 350, w: 40, h: 16 };
+      let bullets = [];
+      let enemies = [];
+      let enemyDir = 1; // 1 = derecha, -1 = izquierda
+      let enemySpeed = 0.5;
+      const spaceStatus = document.getElementById("spaceStatus");
+
+      // crear grid de enemigos (5 columnas x 3 filas)
+      function createEnemies() {
+        enemies = [];
+        for (let row = 0; row < 3; row++) {
+          for (let col = 0; col < 5; col++) {
+            enemies.push({ x: col * 60 + 30, y: row * 40 + 30, w: 30, h: 18, alive: true });
+          }
+        }
+      }
+      createEnemies();
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") ship.x = Math.max(0, ship.x - 20);
+        if (e.key === "ArrowRight") ship.x = Math.min(400 - ship.w, ship.x + 20);
+        if (e.key === " ") bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 });
+      });
+
+      function updateEnemies() {
+        // calcular límites para invertir dirección
+        let minX = Infinity, maxX = -Infinity;
+        enemies.forEach(e => {
+          if (!e.alive) return;
+          minX = Math.min(minX, e.x);
+          maxX = Math.max(maxX, e.x + e.w);
+        });
+        if (minX === Infinity) return; // no enemies
+        if (maxX >= 400 - 10 && enemyDir === 1) { enemyDir = -1; enemies.forEach(e => e.y += 10); }
+        if (minX <= 10 && enemyDir === -1) { enemyDir = 1; enemies.forEach(e => e.y += 10); }
+
+        enemies.forEach(e => { if (e.alive) e.x += enemyDir * enemySpeed; });
+      }
+
+      function drawSpace() {
+        ctx2.clearRect(0, 0, 400, 400);
+
+        // nave
+        ctx2.fillStyle = "lime";
+        ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
+
+        // balas
+        ctx2.fillStyle = "yellow";
+        bullets.forEach(b => { ctx2.fillRect(b.x, b.y, b.w, b.h); b.y -= 6; });
+
+        // enemigos
+        ctx2.fillStyle = "red";
+        enemies.forEach(e => { if (e.alive) ctx2.fillRect(e.x, e.y, e.w, e.h); });
+
+        // colisiones balas-enemigos
+        bullets = bullets.filter(b => {
+          if (b.y < 0) return false;
+          for (let i = 0; i < enemies.length; i++) {
+            const e = enemies[i];
+            if (!e.alive) continue;
+            if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+              e.alive = false;
+              return false;
+            }
+          }
+          return true;
+        });
+
+        // actualizar enemigos
+        updateEnemies();
+
+        // comprobar fin del juego
+        const anyAlive = enemies.some(e => e.alive);
+        if (!anyAlive) {
+          spaceStatus.textContent = "¡Ganaste! Todos los enemigos destruidos.";
+          // reiniciar después de 2 segundos
+          setTimeout(() => {
+            createEnemies();
+            spaceStatus.textContent = "";
+          }, 2000);
+        } else {
+          // si algún enemigo baja demasiado, mostrar mensaje y reiniciar
+          const reached = enemies.some(e => e.alive && e.y + e.h >= ship.y);
+          if (reached) {
+            spaceStatus.textContent = "Has sido alcanzado. Reiniciando...";
+            setTimeout(() => {
+              createEnemies();
+              ship.x = 180;
+              bullets = [];
+              spaceStatus.textContent = "";
+            }, 1500);
+          }
+        }
+      }
+
+      // ciclo principal de Space Invaders
+      setInterval(drawSpace, 40);
+    </script>
+  </body>
+</html>
