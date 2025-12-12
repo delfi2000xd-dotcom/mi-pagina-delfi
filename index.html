@@ -675,3 +675,23 @@
     </script>
   </body>
 </html>
+<section id="sm64" class="card">
+  <h2>🎮 Super Mario 64 en tu navegador</h2>
+  <p>Sube tu copia legítima de Super Mario 64 (ROM .z64/.n64/.v64) para jugar:</p>
+  <input type="file" id="romUpload" accept=".z64,.n64,.v64" />
+  <canvas id="n64Canvas" width="640" height="480"></canvas>
+  <p class="note">Tu ROM nunca se sube al servidor, se ejecuta localmente en tu navegador.</p>
+</section>
+
+<script src="emulador-n64.js"></script>
+<script>
+  const input = document.getElementById('romUpload');
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const arrayBuffer = await file.arrayBuffer();
+      // Aquí llamas al emulador JS para cargar la ROM
+      startN64Emulator(arrayBuffer, document.getElementById('n64Canvas'));
+    }
+  });
+</script>
