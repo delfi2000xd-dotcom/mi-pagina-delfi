@@ -12,6 +12,10 @@
         font-family: system-ui, Arial, sans-serif;
         line-height: 1.5;
         margin: 0;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       .logo-canal {
         width: 200px;
@@ -62,6 +66,7 @@
         position: relative;
         margin: 20px auto;
         background: #111;
+        touch-action: none; /* evita gestos de navegador en el área */
       }
       #square {
         width: 40px;
@@ -69,6 +74,7 @@
         background: #0f0;
         position: absolute;
         cursor: pointer;
+        touch-action: none;
       }
       #score {
         text-align: center;
@@ -83,6 +89,7 @@
         border: 2px solid #234;
         border-radius: 8px;
         background: #000;
+        touch-action: none; /* evita scroll en canvas */
       }
 
       /* Infografía */
@@ -94,12 +101,6 @@
         text-align: center;
         font-size: 1.1rem;
         box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      }
-
-      footer {
-        text-align:center;
-        margin: 24px 0 40px;
-        color:#a9b7c6;
       }
 
       /* Versión */
@@ -115,8 +116,29 @@
         opacity: 0.9;
       }
 
-      /* Small helpers */
+      /* Mobile controls */
+      .controls {
+        display:flex;
+        gap:8px;
+        justify-content:center;
+        margin-top:8px;
+      }
+      .control-btn {
+        background: rgba(10,170,255,0.12);
+        color: #0ff;
+        border: 1px solid rgba(10,170,255,0.25);
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-weight:700;
+        user-select:none;
+        -webkit-user-select:none;
+        touch-action: manipulation;
+      }
+      .controls.small { gap:6px; }
+      .mobile-row { display:flex; gap:6px; justify-content:center; margin-top:6px; }
+
       .center { text-align:center; }
+      footer { text-align:center; margin: 24px 0 40px; color:#a9b7c6; }
     </style>
   </head>
   <body>
@@ -157,25 +179,45 @@
       <section id="juego" class="card">
         <h2>🎮 Minijuego: Atrapa el cuadrado</h2>
         <div id="score">Puntos: 0</div>
-        <div id="game-area">
-          <div id="square"></div>
+        <div id="game-area" aria-label="Área de juego Atrapa el cuadrado">
+          <div id="square" role="button" aria-label="Cuadrado objetivo"></div>
         </div>
+        <p class="center" style="font-size:0.9rem;color:#9fb;">Toca el cuadrado para sumar puntos. En móvil, toca directamente.</p>
       </section>
 
       <!-- Snake -->
       <section id="snake" class="card">
         <h2>🐍 Snake</h2>
-        <canvas id="snakeGame" width="400" height="400"></canvas>
+        <canvas id="snakeGame" width="400" height="400" aria-label="Canvas Snake"></canvas>
         <p class="center" id="snakeScore">Puntos: 0</p>
         <p class="center" style="font-size:0.9rem;color:#9fb;">Usa las flechas para mover. Si chocas, el juego reinicia.</p>
+
+        <!-- Controles móviles para Snake -->
+        <div class="controls small" id="snakeControls" aria-hidden="false">
+          <div class="mobile-row">
+            <button class="control-btn" id="snakeUp">↑</button>
+          </div>
+          <div class="mobile-row">
+            <button class="control-btn" id="snakeLeft">←</button>
+            <button class="control-btn" id="snakeDown">↓</button>
+            <button class="control-btn" id="snakeRight">→</button>
+          </div>
+        </div>
       </section>
 
       <!-- Space Invaders -->
       <section id="space" class="card">
         <h2>👾 Space Invaders</h2>
-        <canvas id="spaceGame" width="400" height="400"></canvas>
+        <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
         <p class="center" id="spaceStatus" style="color:#9fb;"></p>
         <p class="center" style="font-size:0.9rem;color:#9fb;">Flechas para mover, barra espaciadora para disparar.</p>
+
+        <!-- Controles móviles para Space Invaders -->
+        <div class="controls" id="spaceControls">
+          <button class="control-btn" id="spaceLeft">←</button>
+          <button class="control-btn" id="spaceFire">FIRE</button>
+          <button class="control-btn" id="spaceRight">→</button>
+        </div>
       </section>
 
       <section id="contacto" class="card center">
@@ -187,13 +229,33 @@
 
     <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
 
-    <!-- Versión: incrementada a v1.2 -->
-    <div class="version">v1.2</div>
+    <!-- Versión: v1.3 -->
+    <div class="version">v1.3</div>
 
     <script>
-      /* ---------------------------
-         Atrapa el cuadrado
-         --------------------------- */
+      /* ============================
+         Evitar scroll con teclas y gestos
+         ============================ */
+      // Evita que las teclas de flecha y espacio hagan scroll en la página
+      window.addEventListener('keydown', function(e) {
+        const keysToPrevent = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
+        if (keysToPrevent.includes(e.key)) {
+          // Solo prevenir si el foco está en body o en canvas/área de juego
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      // Evita el scroll por gestos táctiles dentro de los elementos de juego
+      const gameElements = [document.getElementById('game-area'), document.getElementById('snakeGame'), document.getElementById('spaceGame')];
+      gameElements.forEach(el => {
+        if (!el) return;
+        el.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive: false });
+        el.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
+      });
+
+      /* ============================
+         Atrapa el cuadrado (touch-friendly)
+         ============================ */
       const square = document.getElementById("square");
       const gameArea = document.getElementById("game-area");
       const scoreDisplay = document.getElementById("score");
@@ -208,18 +270,25 @@
         square.style.top = y + "px";
       }
 
-      square.addEventListener("click", () => {
+      function addPoint() {
         score++;
         scoreDisplay.textContent = "Puntos: " + score;
         moveSquare();
-      });
+      }
+
+      square.addEventListener("click", addPoint);
+      // touch support
+      square.addEventListener("touchstart", function(e) {
+        e.preventDefault();
+        addPoint();
+      }, { passive: false });
 
       setInterval(moveSquare, 2000);
       moveSquare();
 
-      /* ---------------------------
-         Snake (funcional)
-         --------------------------- */
+      /* ============================
+         Snake (funcional + controles móviles)
+         ============================ */
       const canvas = document.getElementById("snakeGame");
       const ctx = canvas.getContext("2d");
       const box = 20;
@@ -229,12 +298,33 @@
       let snakePoints = 0;
       const snakeScoreEl = document.getElementById("snakeScore");
 
+      function setDir(newDir) {
+        // evita reversos directos
+        if (newDir === "LEFT" && dir === "RIGHT") return;
+        if (newDir === "RIGHT" && dir === "LEFT") return;
+        if (newDir === "UP" && dir === "DOWN") return;
+        if (newDir === "DOWN" && dir === "UP") return;
+        dir = newDir;
+      }
+
       document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
-        else if (e.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
-        else if (e.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
-        else if (e.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
+        if (e.key === "ArrowLeft") setDir("LEFT");
+        else if (e.key === "ArrowUp") setDir("UP");
+        else if (e.key === "ArrowRight") setDir("RIGHT");
+        else if (e.key === "ArrowDown") setDir("DOWN");
       });
+
+      // Mobile buttons
+      document.getElementById("snakeUp").addEventListener("touchstart", e => { e.preventDefault(); setDir("UP"); }, { passive: false });
+      document.getElementById("snakeLeft").addEventListener("touchstart", e => { e.preventDefault(); setDir("LEFT"); }, { passive: false });
+      document.getElementById("snakeDown").addEventListener("touchstart", e => { e.preventDefault(); setDir("DOWN"); }, { passive: false });
+      document.getElementById("snakeRight").addEventListener("touchstart", e => { e.preventDefault(); setDir("RIGHT"); }, { passive: false });
+
+      // Also allow click on mobile buttons
+      document.getElementById("snakeUp").addEventListener("click", () => setDir("UP"));
+      document.getElementById("snakeLeft").addEventListener("click", () => setDir("LEFT"));
+      document.getElementById("snakeDown").addEventListener("click", () => setDir("DOWN"));
+      document.getElementById("snakeRight").addEventListener("click", () => setDir("RIGHT"));
 
       function collision(head, array) {
         for (let i = 0; i < array.length; i++) {
@@ -293,9 +383,9 @@
 
       setInterval(drawSnake, 100);
 
-      /* ---------------------------
-         Space Invaders (mejorado básico)
-         --------------------------- */
+      /* ============================
+         Space Invaders (controles móviles)
+         ============================ */
       const canvas2 = document.getElementById("spaceGame");
       const ctx2 = canvas2.getContext("2d");
       let ship = { x: 180, y: 350, w: 40, h: 16 };
@@ -305,7 +395,6 @@
       let enemySpeed = 0.5;
       const spaceStatus = document.getElementById("spaceStatus");
 
-      // crear grid de enemigos (5 columnas x 3 filas)
       function createEnemies() {
         enemies = [];
         for (let row = 0; row < 3; row++) {
@@ -316,24 +405,33 @@
       }
       createEnemies();
 
+      // keyboard controls
       document.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") ship.x = Math.max(0, ship.x - 20);
         if (e.key === "ArrowRight") ship.x = Math.min(400 - ship.w, ship.x + 20);
         if (e.key === " ") bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 });
       });
 
+      // Mobile controls: left/right move on touch, fire on touch
+      document.getElementById("spaceLeft").addEventListener("touchstart", e => { e.preventDefault(); ship.x = Math.max(0, ship.x - 20); }, { passive: false });
+      document.getElementById("spaceRight").addEventListener("touchstart", e => { e.preventDefault(); ship.x = Math.min(400 - ship.w, ship.x + 20); }, { passive: false });
+      document.getElementById("spaceFire").addEventListener("touchstart", e => { e.preventDefault(); bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 }); }, { passive: false });
+
+      // click fallback
+      document.getElementById("spaceLeft").addEventListener("click", () => ship.x = Math.max(0, ship.x - 20));
+      document.getElementById("spaceRight").addEventListener("click", () => ship.x = Math.min(400 - ship.w, ship.x + 20));
+      document.getElementById("spaceFire").addEventListener("click", () => bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 }));
+
       function updateEnemies() {
-        // calcular límites para invertir dirección
         let minX = Infinity, maxX = -Infinity;
         enemies.forEach(e => {
           if (!e.alive) return;
           minX = Math.min(minX, e.x);
           maxX = Math.max(maxX, e.x + e.w);
         });
-        if (minX === Infinity) return; // no enemies
+        if (minX === Infinity) return;
         if (maxX >= 400 - 10 && enemyDir === 1) { enemyDir = -1; enemies.forEach(e => e.y += 10); }
         if (minX <= 10 && enemyDir === -1) { enemyDir = 1; enemies.forEach(e => e.y += 10); }
-
         enemies.forEach(e => { if (e.alive) e.x += enemyDir * enemySpeed; });
       }
 
@@ -373,28 +471,23 @@
         const anyAlive = enemies.some(e => e.alive);
         if (!anyAlive) {
           spaceStatus.textContent = "¡Ganaste! Todos los enemigos destruidos.";
-          // reiniciar después de 2 segundos
-          setTimeout(() => {
-            createEnemies();
-            spaceStatus.textContent = "";
-          }, 2000);
+          setTimeout(() => { createEnemies(); spaceStatus.textContent = ""; }, 2000);
         } else {
-          // si algún enemigo baja demasiado, mostrar mensaje y reiniciar
           const reached = enemies.some(e => e.alive && e.y + e.h >= ship.y);
           if (reached) {
             spaceStatus.textContent = "Has sido alcanzado. Reiniciando...";
-            setTimeout(() => {
-              createEnemies();
-              ship.x = 180;
-              bullets = [];
-              spaceStatus.textContent = "";
-            }, 1500);
+            setTimeout(() => { createEnemies(); ship.x = 180; bullets = []; spaceStatus.textContent = ""; }, 1500);
           }
         }
       }
 
-      // ciclo principal de Space Invaders
       setInterval(drawSpace, 40);
+
+      /* ============================
+         Mejora UX: evitar selección y scroll al tocar botones
+         ============================ */
+      // Evitar que el navegador haga doble-tap zoom en móviles (simple)
+      document.addEventListener('touchstart', function(){}, {passive: true});
     </script>
   </body>
 </html>
