@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Mi página Delfi - Emulador System 7.5.3 (v1.8)</title>
+    <title>Mi página Delfi - Emulador System 7.5.3 (v1.9)</title>
     <style>
       :root{
         --bg:#0b0b0f; --card:#121218; --accent:#0af; --muted:#9fb; --text:#e9f3ff;
@@ -177,17 +177,61 @@
     </main>
 
     <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
-    <div class="version">v1.8</div>
+    <div class="version">v1.9</div>
 
     <!-- Hidden input used to trigger mobile keyboard and capture key events -->
     <input id="kbdFocus" type="text" inputmode="none" aria-hidden="true" />
 
     <script>
+      /* ============================================================
+         v1.9 - Key handling + selective touch handling + games + embed
+         - Prevent page scroll from arrow/space only when interacting
+           with games or the embed container (fix for PC arrow scroll)
+         - Allow normal page scroll elsewhere
+         ============================================================ */
+
+      /* --- 1) Prevent default scrolling for arrow/space only when interacting --- */
+      (function() {
+        // Elements considered interactive (games, controls, embed area)
+        const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '#embedContainer', '.controls', '.embed'];
+        const interactiveEls = interactiveSelectors
+          .map(sel => Array.from(document.querySelectorAll(sel)))
+          .flat();
+
+        function isInsideInteractive(target) {
+          if (!target) return false;
+          for (const el of interactiveEls) {
+            if (!el) continue;
+            if (el === target || el.contains(target)) return true;
+          }
+          return false;
+        }
+
+        // Keys to intercept
+        const keysToBlock = new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ']);
+
+        document.addEventListener('keydown', function(e) {
+          // Only care about relevant keys
+          if (!keysToBlock.has(e.key)) return;
+
+          // If focus is on an input/textarea/contentEditable, do not block
+          const active = document.activeElement;
+          if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+            return;
+          }
+
+          // If the event target is inside an interactive area, prevent default scroll
+          if (isInsideInteractive(e.target)) {
+            e.preventDefault();
+            // Let existing game handlers receive the event normally
+          }
+        }, { passive: false });
+      })();
+
       /* ============================
          Selective touch handling: allow page scroll except when interacting with games/embed
          ============================ */
       (function() {
-        // Interactive selectors (must match elements in the page)
         const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '.controls', '.embed', '#embedContainer'];
         const interactiveEls = interactiveSelectors
           .map(sel => Array.from(document.querySelectorAll(sel)))
@@ -363,7 +407,7 @@
         const canvas2 = document.getElementById("spaceGame");
         const ctx2 = canvas2.getContext("2d");
         window.ship = { x: 180, y: 350, w: 40, h: 16 }; // expose ship for keyboard helper
-        let bullets = [];
+        window.bullets = window.bullets || [];
         let enemies = [];
         let enemyDir = 1;
         let enemySpeed = 0.5;
@@ -380,9 +424,9 @@
         createEnemies();
 
         document.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowLeft") ship.x = Math.max(0, ship.x - 20);
-          if (e.key === "ArrowRight") ship.x = Math.min(canvas2.width - ship.w, ship.x + 20);
-          if (e.key === " ") bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 });
+          if (e.key === "ArrowLeft") window.ship.x = Math.max(0, window.ship.x - 20);
+          if (e.key === "ArrowRight") window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + 20);
+          if (e.key === " ") window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 });
         });
 
         // Hold-to-repeat for mobile controls
@@ -399,9 +443,9 @@
         }
 
         const spLeft = document.getElementById("spaceLeft"), spRight = document.getElementById("spaceRight"), spFire = document.getElementById("spaceFire");
-        if (spLeft) addHoldBehavior(spLeft, ()=> ship.x = Math.max(0, ship.x - 6));
-        if (spRight) addHoldBehavior(spRight, ()=> ship.x = Math.min(canvas2.width - ship.w, ship.x + 6));
-        if (spFire) addHoldBehavior(spFire, ()=> bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 }));
+        if (spLeft) addHoldBehavior(spLeft, ()=> window.ship.x = Math.max(0, window.ship.x - 6));
+        if (spRight) addHoldBehavior(spRight, ()=> window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + 6));
+        if (spFire) addHoldBehavior(spFire, ()=> window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }));
 
         function updateEnemies(){
           let minX = Infinity, maxX = -Infinity;
@@ -414,11 +458,11 @@
 
         function drawSpace(){
           ctx2.clearRect(0,0,canvas2.width,canvas2.height);
-          ctx2.fillStyle = "lime"; ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
-          ctx2.fillStyle = "yellow"; bullets.forEach(b => { ctx2.fillRect(b.x,b.y,b.w,b.h); b.y -= 6; });
+          ctx2.fillStyle = "lime"; ctx2.fillRect(window.ship.x, window.ship.y, window.ship.w, window.ship.h);
+          ctx2.fillStyle = "yellow"; window.bullets.forEach(b => { ctx2.fillRect(b.x,b.y,b.w,b.h); b.y -= 6; });
           ctx2.fillStyle = "red"; enemies.forEach(e => { if (e.alive) ctx2.fillRect(e.x,e.y,e.w,e.h); });
 
-          bullets = bullets.filter(b => {
+          window.bullets = window.bullets.filter(b => {
             if (b.y < 0) return false;
             for (let i=0;i<enemies.length;i++){
               const e = enemies[i];
@@ -436,12 +480,12 @@
           const anyAlive = enemies.some(e => e.alive);
           if (!anyAlive){
             spaceStatus.textContent = "¡Ganaste! Reiniciando...";
-            setTimeout(()=>{ createEnemies(); bullets = []; spaceStatus.textContent = ""; }, 1500);
+            setTimeout(()=>{ createEnemies(); window.bullets = []; spaceStatus.textContent = ""; }, 1500);
           } else {
-            const reached = enemies.some(e => e.alive && e.y + e.h >= ship.y);
+            const reached = enemies.some(e => e.alive && e.y + e.h >= window.ship.y);
             if (reached){
               spaceStatus.textContent = "Has sido alcanzado. Reiniciando...";
-              setTimeout(()=>{ createEnemies(); ship.x = 180; bullets = []; spaceStatus.textContent = ""; }, 1500);
+              setTimeout(()=>{ createEnemies(); window.ship.x = 180; window.bullets = []; spaceStatus.textContent = ""; }, 1500);
             }
           }
         }
@@ -530,7 +574,7 @@
           else if (e.key === 'ArrowRight') { window.setDir && window.setDir('RIGHT'); window.ship && (window.ship.x = Math.min(document.getElementById('spaceGame').width - window.ship.w, window.ship.x + 20)); }
           else if (e.key === 'ArrowUp') { window.setDir && window.setDir('UP'); }
           else if (e.key === 'ArrowDown') { window.setDir && window.setDir('DOWN'); }
-          else if (e.key === ' ') { if (window.ship) { const canvas2 = document.getElementById('spaceGame'); const bullets = window.bullets || []; bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); window.bullets = bullets; } }
+          else if (e.key === ' ') { if (window.ship) { window.bullets = window.bullets || []; window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); } }
           e.preventDefault();
         });
 
