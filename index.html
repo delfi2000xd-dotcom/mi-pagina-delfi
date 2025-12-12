@@ -6,7 +6,24 @@
     <title>Mi página Delfi</title>
     <link rel="stylesheet" href="style.css">
     <style>
-      /* Estilos del minijuego */
+      /* Logo */
+      .logo-canal {
+        width: 200px;
+        border-radius: 50%;
+        border: 4px solid #00f;
+        box-shadow: 0 0 20px #0ff;
+        margin-bottom: 1rem;
+      }
+      nav {
+        display:flex;
+        gap:1rem;
+        justify-content:center;
+        background:#222;
+        padding:10px;
+      }
+      nav a { color:#0ff; text-decoration:none; }
+
+      /* Minijuego Atrapa el cuadrado */
       #game-area {
         width: 400px;
         height: 400px;
@@ -27,13 +44,6 @@
         font-size: 1.5rem;
         color: #fff;
       }
-      .logo-canal {
-        width: 200px;
-        border-radius: 50%;
-        border: 4px solid var(--accent1);
-        box-shadow: 0 0 20px var(--accent2);
-        margin-bottom: 1rem;
-      }
     </style>
   </head>
   <body>
@@ -41,21 +51,21 @@
       <nav>
         <a href="#inicio">Inicio</a>
         <a href="#canal">Canal</a>
-        <a href="#juego">Juego</a>
+        <a href="#juego">Atrapa</a>
+        <a href="#snake">Snake</a>
+        <a href="#space">Space Invaders</a>
         <a href="#contacto">Contacto</a>
       </nav>
     </header>
 
     <main id="inicio">
-      <section class="hero">
-        <!-- Logo de tu canal -->
+      <section class="hero" style="text-align:center;">
         <img src="imagenes/canal.png" alt="Logo de mi canal" class="logo-canal">
-
         <h1>Hola, soy Delfi</h1>
-        <p>Bienvenido a mi página web. Aquí comparto mi canal y mis redes.</p>
+        <p>Bienvenido a mi página web. Aquí comparto mi canal, mis redes y algunos juegos 🎮</p>
       </section>
 
-      <section id="canal" class="card">
+      <section id="canal" class="card" style="text-align:center;">
         <h2>🎥 Mi canal de YouTube</h2>
         <p>Visita mi canal para ver mis videos y suscribirte.</p>
         <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank">
@@ -63,7 +73,7 @@
         </a>
       </section>
 
-      <!-- Minijuego -->
+      <!-- Minijuego Atrapa el cuadrado -->
       <section id="juego" class="card">
         <h2>🎮 Minijuego: Atrapa el cuadrado</h2>
         <div id="score">Puntos: 0</div>
@@ -72,24 +82,35 @@
         </div>
       </section>
 
-      <section id="contacto" class="card">
+      <!-- Snake -->
+      <section id="snake" class="card">
+        <h2>🐍 Snake</h2>
+        <canvas id="snakeGame" width="400" height="400" style="background:#111; display:block; margin:auto;"></canvas>
+      </section>
+
+      <!-- Space Invaders -->
+      <section id="space" class="card">
+        <h2>👾 Space Invaders</h2>
+        <canvas id="spaceGame" width="400" height="400" style="background:#000; display:block; margin:auto;"></canvas>
+      </section>
+
+      <section id="contacto" class="card" style="text-align:center;">
         <h2>📲 Contacto</h2>
         <p><strong>Roblox:</strong> MVTOEP</p>
         <p><strong>Discord:</strong> dealfi</p>
       </section>
     </main>
 
-    <footer>
+    <footer style="text-align:center; margin-top:20px;">
       © 2025 Delfi. Todos los derechos reservados.
     </footer>
 
     <script>
-      // Lógica del minijuego
+      /* Atrapa el cuadrado */
       const square = document.getElementById("square");
       const gameArea = document.getElementById("game-area");
       const scoreDisplay = document.getElementById("score");
       let score = 0;
-
       function moveSquare() {
         const maxX = gameArea.clientWidth - square.clientWidth;
         const maxY = gameArea.clientHeight - square.clientHeight;
@@ -98,16 +119,83 @@
         square.style.left = x + "px";
         square.style.top = y + "px";
       }
-
       square.addEventListener("click", () => {
         score++;
         scoreDisplay.textContent = "Puntos: " + score;
         moveSquare();
       });
-
-      // Mueve el cuadrado cada 2 segundos
       setInterval(moveSquare, 2000);
       moveSquare();
+
+      /* Snake */
+      const canvas = document.getElementById("snakeGame");
+      const ctx = canvas.getContext("2d");
+      const box = 20;
+      let snake = [{x: 9*box, y: 10*box}];
+      let food = {x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box};
+      let dir;
+      document.addEventListener("keydown", event => {
+        if(event.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
+        else if(event.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
+        else if(event.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
+        else if(event.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
+      });
+      function drawSnake() {
+        ctx.clearRect(0,0,400,400);
+        for(let i=0; i<snake.length; i++){
+          ctx.fillStyle = (i===0)? "lime":"white";
+          ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        }
+        ctx.fillStyle = "red";
+        ctx.fillRect(food.x, food.y, box, box);
+        let snakeX = snake[0].x;
+        let snakeY = snake[0].y;
+        if(dir==="LEFT") snakeX -= box;
+        if(dir==="UP") snakeY -= box;
+        if(dir==="RIGHT") snakeX += box;
+        if(dir==="DOWN") snakeY += box;
+        if(snakeX === food.x && snakeY === food.y){
+          food = {x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box};
+        } else {
+          snake.pop();
+        }
+        let newHead = {x: snakeX, y: snakeY};
+        snake.unshift(newHead);
+      }
+      setInterval(drawSnake, 100);
+
+      /* Space Invaders */
+      const canvas2 = document.getElementById("spaceGame");
+      const ctx2 = canvas2.getContext("2d");
+      let ship = {x:180, y:350, w:40, h:20};
+      let bullets = [];
+      let enemies = [];
+      for(let i=0;i<5;i++){ enemies.push({x: i*60+30, y:30, w:30, h:20}); }
+      document.addEventListener("keydown", e=>{
+        if(e.key==="ArrowLeft") ship.x -= 20;
+        if(e.key==="ArrowRight") ship.x += 20;
+        if(e.key===" ") bullets.push({x: ship.x+ship.w/2-2, y: ship.y});
+      });
+      function drawSpace(){
+        ctx2.clearRect(0,0,400,400);
+        ctx2.fillStyle="lime";
+        ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
+        ctx2.fillStyle="yellow";
+        for(let b of bullets){ ctx2.fillRect(b.x,b.y,4,10); b.y -= 5; }
+        ctx2.fillStyle="red";
+        for(let e of enemies){ ctx2.fillRect(e.x,e.y,e.w,e.h); }
+        bullets = bullets.filter(b=>{
+          for(let i=0;i<enemies.length;i++){
+            let e=enemies[i];
+            if(b.x<e.x+e.w && b.x+4>e.x && b.y<e.y+e.h && b.y+10>e.y){
+              enemies.splice(i,1);
+              return false;
+            }
+          }
+          return b.y>0;
+        });
+      }
+      setInterval(drawSpace,50);
     </script>
   </body>
 </html>
