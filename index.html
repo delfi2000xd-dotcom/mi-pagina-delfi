@@ -1,5 +1,3 @@
-Página completa (v1.6) — mejoras, embed optimizado y botón de teclado móvil
-Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización del embed (responsive, loading="lazy"), botón para abrir el teclado en móviles (trae el teclado virtual y captura teclas), botón de pantalla completa para el emulador, controles táctiles con movimiento continuo al mantener pulsado, prevención de scroll/doble-tap y accesibilidad básica. Guarda como index.html y súbelo a tu hosting.
 <!doctype html>
 <html lang="es">
   <head>
@@ -122,31 +120,33 @@ Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización
         </div>
       </section>
 
+      <!-- Emulador: carga condicional y fallback móvil -->
       <section id="emulador" class="card">
         <h2>🖥️ Emulador Infinite Mac — System 7.5.3</h2>
 
-        <div class="embed-wrap">
-          <div class="embed-controls" role="toolbar" aria-label="Controles del emulador">
-            <button class="fullscreen-btn" id="emuladorFullscreen">Pantalla completa</button>
-            <button class="kbd-btn" id="openKeyboard">Abrir teclado (móvil)</button>
-            <a class="btn" href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">Abrir en nueva pestaña</a>
+        <div id="emuladorControls" class="embed-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+            <button id="loadEmulatorBtn" class="fullscreen-btn" style="background:#0af;color:#001;padding:8px 12px;border-radius:8px;font-weight:700;border:none;cursor:pointer;">
+              Cargar emulador aquí
+            </button>
+
+            <button id="openNewTabBtn" class="btn" style="background:#09c;color:#001;padding:8px 12px;border-radius:8px;font-weight:700;">
+              Abrir en nueva pestaña
+            </button>
+
+            <button id="emuladorFullscreen" class="kbd-btn" style="background:rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;font-weight:700;">
+              Pantalla completa (si está cargado)
+            </button>
           </div>
 
-          <!-- Embed oficial -->
-          <iframe
-            id="infiniteIframe"
-            class="embed"
-            src="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650"
-            loading="lazy"
-            allow="clipboard-write; fullscreen; autoplay"
-            frameborder="0"
-            title="Infinite Mac System 7.5.3">
-          </iframe>
+          <div id="embedContainer" style="width:100%;max-width:900px;min-height:120px;display:flex;align-items:center;justify-content:center;">
+            <div id="embedPlaceholder" style="color:#9fb;text-align:center;padding:18px;">
+              Pulsa "Cargar emulador aquí" para iniciar el emulador en esta página. Si no funciona, usa "Abrir en nueva pestaña".
+            </div>
+          </div>
 
-          <div class="kbd-hint">Pulsa "Abrir teclado" para mostrar el teclado virtual en móviles y usar atajos (flechas, espacio)</div>
+          <p class="note" style="margin-top:6px;">Si el emulador va lento o no carga en tu móvil, abre en nueva pestaña para mejor compatibilidad.</p>
         </div>
-
-        <p class="note">Si el emulador no carga aquí, <a href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">ábrelo en una nueva pestaña</a>.</p>
       </section>
 
       <section id="contacto" class="card center">
@@ -157,7 +157,7 @@ Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización
     </main>
 
     <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
-    <div class="version">v1.6</div>
+    <div class="version">v1.7</div>
 
     <!-- Hidden input used to trigger mobile keyboard and capture key events -->
     <input id="kbdFocus" type="text" inputmode="none" aria-hidden="true" />
@@ -172,7 +172,7 @@ Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización
       }, { passive:false });
 
       // Evitar scroll por gestos dentro de áreas de juego
-      const gameElements = [document.getElementById('game-area'), document.getElementById('snakeGame'), document.getElementById('spaceGame'), document.getElementById('infiniteIframe')];
+      const gameElements = [document.getElementById('game-area'), document.getElementById('snakeGame'), document.getElementById('spaceGame')];
       gameElements.forEach(el => {
         if (!el) return;
         el.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive:false });
@@ -320,7 +320,6 @@ Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización
         if (e.key === " ") bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 });
       });
 
-      // Mobile controls with hold-to-repeat
       const spLeft = document.getElementById("spaceLeft"), spRight = document.getElementById("spaceRight"), spFire = document.getElementById("spaceFire");
       if (spLeft) addHoldBehavior(spLeft, ()=> ship.x = Math.max(0, ship.x - 6));
       if (spRight) addHoldBehavior(spRight, ()=> ship.x = Math.min(canvas2.width - ship.w, ship.x + 6));
@@ -371,74 +370,103 @@ Aquí tienes el archivo HTML completo con las mejoras que pediste: optimización
       setInterval(drawSpace, 40);
 
       /* ============================
-         Emulador: fullscreen y teclado móvil
+         Emulador: carga condicional, fullscreen y teclado móvil
          ============================ */
-      const iframe = document.getElementById('infiniteIframe');
-      const fsBtn = document.getElementById('emuladorFullscreen');
-      fsBtn.addEventListener('click', () => {
-        if (iframe.requestFullscreen) iframe.requestFullscreen();
-        else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-        else window.open(iframe.src, '_blank');
-      });
+      (function(){
+        const embedUrl = "https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650";
+        const loadBtn = document.getElementById("loadEmulatorBtn");
+        const openBtn = document.getElementById("openNewTabBtn");
+        const fsBtn = document.getElementById("emuladorFullscreen");
+        const container = document.getElementById("embedContainer");
+        const placeholder = document.getElementById("embedPlaceholder");
+        let iframeEl = null;
 
-      // Hidden input to bring up mobile keyboard and capture keys
-      const kbdFocus = document.getElementById('kbdFocus');
-      const openKbdBtn = document.getElementById('openKeyboard');
-
-      // When user presses the button, focus the hidden input to open the mobile keyboard.
-      openKbdBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // set inputmode to text to encourage keyboard on mobile
-        kbdFocus.setAttribute('inputmode', 'text');
-        kbdFocus.focus({preventScroll:true});
-        // small timeout to ensure keyboard opens on some devices
-        setTimeout(()=> kbdFocus.focus({preventScroll:true}), 50);
-      });
-
-      // Capture key events from the hidden input and dispatch to page handlers
-      kbdFocus.addEventListener('keydown', (e) => {
-        // Map arrow keys and space to game controls
-        if (e.key === 'ArrowLeft') {
-          // For Snake and Space: move left
-          setDir && setDir('LEFT');
-          ship && (ship.x = Math.max(0, ship.x - 20));
-        } else if (e.key === 'ArrowRight') {
-          setDir && setDir('RIGHT');
-          ship && (ship.x = Math.min(canvas2.width - ship.w, ship.x + 20));
-        } else if (e.key === 'ArrowUp') {
-          setDir && setDir('UP');
-        } else if (e.key === 'ArrowDown') {
-          setDir && setDir('DOWN');
-        } else if (e.key === ' ') {
-          // fire in Space
-          bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 });
+        function isMobile() {
+          return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         }
-        // prevent default to avoid unexpected behavior
-        e.preventDefault();
-      });
 
-      // If user taps outside, blur the input to hide keyboard
-      document.addEventListener('touchstart', (e) => {
-        const target = e.target;
-        if (target !== kbdFocus && target !== openKbdBtn) {
-          try { kbdFocus.blur(); } catch (err) {}
+        openBtn.addEventListener("click", () => {
+          window.open(embedUrl, "_blank", "noopener");
+        });
+
+        loadBtn.addEventListener("click", () => {
+          if (iframeEl) return;
+          iframeEl = document.createElement("iframe");
+          iframeEl.src = embedUrl;
+          iframeEl.className = "embed";
+          iframeEl.style.width = "100%";
+          iframeEl.style.height = "600px";
+          iframeEl.style.border = "1px solid #222";
+          iframeEl.style.borderRadius = "8px";
+          iframeEl.loading = "lazy";
+          iframeEl.allow = "clipboard-write; fullscreen; autoplay";
+          iframeEl.title = "Infinite Mac System 7.5.3";
+          container.removeChild(placeholder);
+          container.appendChild(iframeEl);
+
+          if (isMobile()) {
+            iframeEl.style.height = "420px";
+            setTimeout(() => {
+              // Si el iframe está bloqueado por políticas, contentWindow puede ser inaccesible
+              try {
+                // Intent simple de acceso para detectar bloqueo
+                const cw = iframeEl.contentWindow;
+                if (!cw) {
+                  alert("El emulador no pudo cargarse embebido en tu dispositivo. Usa 'Abrir en nueva pestaña' para mejor compatibilidad.");
+                }
+              } catch (err) {
+                alert("El emulador no pudo cargarse embebido en tu dispositivo. Usa 'Abrir en nueva pestaña' para mejor compatibilidad.");
+              }
+            }, 6000);
+          }
+        });
+
+        fsBtn.addEventListener("click", () => {
+          if (!iframeEl) {
+            alert("Primero carga el emulador aquí con 'Cargar emulador aquí'.");
+            return;
+          }
+          try {
+            if (iframeEl.requestFullscreen) iframeEl.requestFullscreen();
+            else if (iframeEl.webkitRequestFullscreen) iframeEl.webkitRequestFullscreen();
+            else window.open(embedUrl, "_blank");
+          } catch (err) {
+            window.open(embedUrl, "_blank");
+          }
+        });
+
+        // Mobile keyboard helper: focus hidden input to open keyboard and capture keys
+        const kbdFocus = document.getElementById('kbdFocus');
+        const openKbdBtn = document.getElementById('openKeyboard');
+        if (openKbdBtn) {
+          openKbdBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            kbdFocus.setAttribute('inputmode', 'text');
+            kbdFocus.focus({preventScroll:true});
+            setTimeout(()=> kbdFocus.focus({preventScroll:true}), 50);
+          });
         }
-      }, { passive:true });
 
-      // Improve UX: when focusing, set small placeholder to keep keyboard visible on some Android versions
-      kbdFocus.addEventListener('focus', () => { kbdFocus.value = ''; });
-      kbdFocus.addEventListener('blur', () => { kbdFocus.value = ''; });
+        // Capture keys from hidden input and map to game controls
+        kbdFocus.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') { setDir && setDir('LEFT'); ship && (ship.x = Math.max(0, ship.x - 20)); }
+          else if (e.key === 'ArrowRight') { setDir && setDir('RIGHT'); ship && (ship.x = Math.min(canvas2.width - ship.w, ship.x + 20)); }
+          else if (e.key === 'ArrowUp') { setDir && setDir('UP'); }
+          else if (e.key === 'ArrowDown') { setDir && setDir('DOWN'); }
+          else if (e.key === ' ') { bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 }); }
+          e.preventDefault();
+        });
+
+        document.addEventListener('touchstart', (e) => {
+          const target = e.target;
+          if (target !== kbdFocus && target !== openKbdBtn) {
+            try { kbdFocus.blur(); } catch (err) {}
+          }
+        }, { passive:true });
+      })();
 
       // small passive touchstart to improve mobile UX
       document.addEventListener('touchstart', function(){}, {passive:true});
     </script>
   </body>
 </html>
-
-
-
-Si quieres, hago ahora cualquiera de estas mejoras rápidas:
-- Ajustar el texto del botón (por ejemplo, “Abrir teclado para controles”).
-- Cambiar la sensibilidad del movimiento continuo (intervalo/velocidad).
-- Añadir un botón de pausa para cada juego.
-Dime cuál y lo aplico en el mismo archivo (subo a v1.7 cuando lo haga).
