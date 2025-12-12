@@ -3,56 +3,40 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mi página Delfi</title>
+    <title>Mi página Delfi - Emulador System 7.5.3</title>
     <style>
-      :root {
-        --bg: #0b0b0f;
-        --card: #121218;
-        --accent: #0af;
-        --muted: #9fb;
-        --text: #e9f3ff;
+      :root{
+        --bg:#0b0b0f; --card:#121218; --accent:#0af; --muted:#9fb; --text:#e9f3ff;
       }
-      html,body { height:100%; margin:0; background:var(--bg); color:var(--text); font-family:system-ui, Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -webkit-user-select:none; user-select:none; }
-      header { position:sticky; top:0; z-index:20; background:#111; border-bottom:1px solid rgba(255,255,255,0.03); }
-      nav { display:flex; gap:12px; justify-content:center; padding:12px; }
-      nav a { color:var(--accent); text-decoration:none; font-weight:600; }
-      nav a:hover { color:#8ef; }
-
-      main { padding:18px 12px 80px; max-width:1100px; margin:0 auto; }
-
-      .hero { text-align:center; margin:8px 0 18px; }
-      .logo-canal { width:180px; height:180px; object-fit:cover; border-radius:50%; border:4px solid #00f; box-shadow:0 8px 30px rgba(10,200,255,0.08); display:block; margin:0 auto 12px; }
-
-      .card { background:var(--card); border-radius:12px; padding:18px; margin:16px auto; box-shadow:0 8px 24px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.03); max-width:1000px; }
-
-      .center { text-align:center; }
-      .btn { display:inline-block; background:var(--accent); color:#001; padding:10px 14px; border-radius:8px; text-decoration:none; font-weight:700; }
-      .btn:hover { background:#09c; }
-
+      html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;}
+      header{position:sticky;top:0;background:#111;border-bottom:1px solid rgba(255,255,255,0.03);z-index:30}
+      nav{display:flex;gap:12px;justify-content:center;padding:12px}
+      nav a{color:var(--accent);text-decoration:none;font-weight:600}
+      nav a:hover{color:#8ef}
+      main{padding:18px 12px 90px;max-width:1100px;margin:0 auto}
+      .hero{ text-align:center; margin:8px 0 18px }
+      .logo-canal{ width:180px; height:180px; object-fit:cover; border-radius:50%; border:4px solid #00f; display:block; margin:0 auto 12px; box-shadow:0 8px 30px rgba(10,200,255,0.08) }
+      .card{ background:var(--card); border-radius:12px; padding:18px; margin:16px auto; box-shadow:0 8px 24px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.03); max-width:1000px }
+      .center{text-align:center}
+      .btn{display:inline-block;background:var(--accent);color:#001;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+      .btn:hover{background:#09c}
       /* Atrapa el cuadrado */
-      #game-area { width:400px; height:400px; border:2px solid #00f; margin:16px auto; position:relative; background:#111; touch-action:none; }
-      #square { width:40px; height:40px; background:#0f0; position:absolute; cursor:pointer; touch-action:none; border-radius:6px; }
-
+      #game-area{width:400px;height:400px;border:2px solid #00f;margin:16px auto;position:relative;background:#111;touch-action:none}
+      #square{width:40px;height:40px;background:#0f0;position:absolute;cursor:pointer;border-radius:6px;touch-action:none}
+      #score{ text-align:center; font-size:1.1rem; margin-bottom:8px }
       /* Canvas */
-      canvas { display:block; margin:12px auto; border-radius:8px; border:2px solid #234; background:#000; touch-action:none; }
-
+      canvas{display:block;margin:12px auto;border-radius:8px;border:2px solid #234;background:#000;touch-action:none}
       /* Infografía */
-      .infografia { background: linear-gradient(135deg,#0af,#09c); color:#fff; padding:18px; border-radius:12px; text-align:center; font-size:1.05rem; box-shadow:0 8px 24px rgba(0,0,0,0.45); }
-
+      .infografia{background:linear-gradient(135deg,#0af,#09c);color:#fff;padding:18px;border-radius:12px;text-align:center;font-size:1.05rem;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
       /* Emulador */
-      .embed { width:100%; max-width:900px; height:600px; border:1px solid #222; border-radius:8px; display:block; margin:12px auto; }
-      @media (max-width:720px) { .embed { height:420px; } .card { padding:12px; } #game-area, canvas { width:320px; height:320px; } }
-
+      .embed{width:100%;max-width:900px;height:600px;border:1px solid #222;border-radius:8px;display:block;margin:12px auto}
+      @media (max-width:720px){ .embed{height:420px} .card{padding:12px} #game-area, canvas{width:320px;height:320px} }
       /* Mobile controls */
-      .controls { display:flex; gap:8px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
-      .control-btn { background: rgba(10,170,255,0.12); color:var(--accent); border:1px solid rgba(10,170,255,0.25); padding:10px 12px; border-radius:8px; font-weight:700; user-select:none; -webkit-user-select:none; touch-action:manipulation; }
-
-      footer { text-align:center; color:#a9b7c6; margin:28px 0 60px; }
-
-      .version { position:fixed; bottom:10px; right:10px; background:#222; color:var(--accent); padding:6px 10px; border-radius:6px; font-size:0.9rem; opacity:0.95; z-index:40; }
-
-      /* small helper text */
-      .note { color:var(--muted); font-size:0.92rem; text-align:center; margin-top:8px; }
+      .controls{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+      .control-btn{background:rgba(10,170,255,0.12);color:var(--accent);border:1px solid rgba(10,170,255,0.25);padding:10px 12px;border-radius:8px;font-weight:700;user-select:none;touch-action:manipulation}
+      footer{text-align:center;color:#a9b7c6;margin:28px 0 60px}
+      .version{position:fixed;bottom:10px;right:10px;background:#222;color:var(--accent);padding:6px 10px;border-radius:6px;font-size:0.9rem;opacity:0.95;z-index:40}
+      .note{color:var(--muted);font-size:0.92rem;text-align:center;margin-top:8px}
     </style>
   </head>
   <body>
@@ -91,7 +75,7 @@
 
       <section id="juego" class="card">
         <h2>🎮 Minijuego: Atrapa el cuadrado</h2>
-        <div id="score" class="center">Puntos: 0</div>
+        <div id="score">Puntos: 0</div>
         <div id="game-area" aria-label="Área de juego Atrapa el cuadrado">
           <div id="square" role="button" aria-label="Cuadrado objetivo"></div>
         </div>
@@ -105,9 +89,9 @@
         <p class="note">Usa las flechas para mover. Si chocas, el juego reinicia.</p>
 
         <div class="controls" id="snakeControls" aria-hidden="false">
-          <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
             <button class="control-btn" id="snakeUp">↑</button>
-            <div style="display:flex; gap:6px;">
+            <div style="display:flex;gap:6px">
               <button class="control-btn" id="snakeLeft">←</button>
               <button class="control-btn" id="snakeDown">↓</button>
               <button class="control-btn" id="snakeRight">→</button>
@@ -132,20 +116,18 @@
       <section id="emulador" class="card">
         <h2>🖥️ Emulador Infinite Mac — System 7.5.3</h2>
 
-        <!--
-          Nota: si el iframe no carga por políticas del host (X-Frame-Options) o cambia la URL,
-          abre el enlace de respaldo en una nueva pestaña.
-          Reemplaza la URL si tienes otra instancia válida.
-        -->
+        <!-- Embed oficial encontrado -->
         <iframe
           class="embed"
-          src="https://infinitemac.org/1996/System%207.5.3"
-          title="Infinite Mac System 7.5.3"
-          allow="clipboard-write; fullscreen; autoplay"
-          loading="lazy"
-        ></iframe>
+          src="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650"
+          width="640"
+          height="480"
+          allow="cross-origin-isolated"
+          frameborder="0"
+          title="Infinite Mac System 7.5.3">
+        </iframe>
 
-        <p class="note">Si el emulador no carga aquí, <a href="https://infinitemac.org/1996/System%207.5.3" target="_blank" rel="noopener">ábrelo en una nueva pestaña</a> para usarlo directamente.</p>
+        <p class="note">Si el emulador no carga aquí, <a href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">ábrelo en una nueva pestaña</a>.</p>
       </section>
 
       <section id="contacto" class="card center">
@@ -156,59 +138,42 @@
     </main>
 
     <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
-
-    <div class="version">v1.4</div>
+    <div class="version">v1.5</div>
 
     <script>
-      /* ============================
-         Evitar scroll con teclas y gestos
-         ============================ */
-      window.addEventListener('keydown', function(e) {
+      /* Evitar scroll con teclas y gestos dentro de áreas de juego */
+      window.addEventListener('keydown', function(e){
         const keysToPrevent = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
-        if (keysToPrevent.includes(e.key)) {
-          e.preventDefault();
-        }
-      }, { passive: false });
+        if (keysToPrevent.includes(e.key)) e.preventDefault();
+      }, { passive:false });
 
       const gameElements = [document.getElementById('game-area'), document.getElementById('snakeGame'), document.getElementById('spaceGame')];
       gameElements.forEach(el => {
         if (!el) return;
-        el.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive: false });
-        el.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
+        el.addEventListener('touchstart', e => { e.stopPropagation(); }, { passive:false });
+        el.addEventListener('touchmove', e => { e.preventDefault(); }, { passive:false });
       });
 
-      /* ============================
-         Atrapa el cuadrado
-         ============================ */
+      /* Atrapa el cuadrado */
       const square = document.getElementById("square");
       const gameArea = document.getElementById("game-area");
       const scoreDisplay = document.getElementById("score");
       let score = 0;
-
-      function moveSquare() {
-        const maxX = gameArea.clientWidth - square.clientWidth;
-        const maxY = gameArea.clientHeight - square.clientHeight;
-        const x = Math.floor(Math.random() * Math.max(1, maxX));
-        const y = Math.floor(Math.random() * Math.max(1, maxY));
+      function moveSquare(){
+        const maxX = Math.max(1, gameArea.clientWidth - square.clientWidth);
+        const maxY = Math.max(1, gameArea.clientHeight - square.clientHeight);
+        const x = Math.floor(Math.random() * maxX);
+        const y = Math.floor(Math.random() * maxY);
         square.style.left = x + "px";
         square.style.top = y + "px";
       }
-
-      function addPoint() {
-        score++;
-        scoreDisplay.textContent = "Puntos: " + score;
-        moveSquare();
-      }
-
+      function addPoint(){ score++; scoreDisplay.textContent = "Puntos: " + score; moveSquare(); }
       square.addEventListener("click", addPoint);
-      square.addEventListener("touchstart", function(e){ e.preventDefault(); addPoint(); }, { passive: false });
-
+      square.addEventListener("touchstart", function(e){ e.preventDefault(); addPoint(); }, { passive:false });
       setInterval(moveSquare, 2000);
       moveSquare();
 
-      /* ============================
-         Snake (funcional + controles móviles)
-         ============================ */
+      /* Snake */
       const canvas = document.getElementById("snakeGame");
       const ctx = canvas.getContext("2d");
       const box = 20;
@@ -218,7 +183,7 @@
       let snakePoints = 0;
       const snakeScoreEl = document.getElementById("snakeScore");
 
-      function setDir(newDir) {
+      function setDir(newDir){
         if (newDir === "LEFT" && dir === "RIGHT") return;
         if (newDir === "RIGHT" && dir === "LEFT") return;
         if (newDir === "UP" && dir === "DOWN") return;
@@ -233,21 +198,19 @@
         else if (e.key === "ArrowDown") setDir("DOWN");
       });
 
-      // Mobile buttons (touchstart + click fallback)
+      // Mobile buttons
       const sUp = document.getElementById("snakeUp"), sLeft = document.getElementById("snakeLeft"), sDown = document.getElementById("snakeDown"), sRight = document.getElementById("snakeRight");
       if (sUp) { sUp.addEventListener("touchstart", e => { e.preventDefault(); setDir("UP"); }, { passive:false }); sUp.addEventListener("click", ()=>setDir("UP")); }
       if (sLeft) { sLeft.addEventListener("touchstart", e => { e.preventDefault(); setDir("LEFT"); }, { passive:false }); sLeft.addEventListener("click", ()=>setDir("LEFT")); }
       if (sDown) { sDown.addEventListener("touchstart", e => { e.preventDefault(); setDir("DOWN"); }, { passive:false }); sDown.addEventListener("click", ()=>setDir("DOWN")); }
       if (sRight) { sRight.addEventListener("touchstart", e => { e.preventDefault(); setDir("RIGHT"); }, { passive:false }); sRight.addEventListener("click", ()=>setDir("RIGHT")); }
 
-      function collision(head, array) {
-        for (let i = 0; i < array.length; i++) {
-          if (head.x === array[i].x && head.y === array[i].y) return true;
-        }
+      function collision(head, array){
+        for (let i = 0; i < array.length; i++) if (head.x === array[i].x && head.y === array[i].y) return true;
         return false;
       }
 
-      function resetSnake() {
+      function resetSnake(){
         snake = [{ x: 9 * box, y: 10 * box }];
         dir = null;
         snakePoints = 0;
@@ -255,27 +218,23 @@
         food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
       }
 
-      function drawSnake() {
+      function drawSnake(){
         ctx.fillStyle = "#000";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        for (let i = 0; i < snake.length; i++) {
-          ctx.fillStyle = i === 0 ? "lime" : "white";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        for (let i=0;i<snake.length;i++){
+          ctx.fillStyle = i===0 ? "lime" : "white";
           ctx.fillRect(snake[i].x, snake[i].y, box, box);
         }
-
         ctx.fillStyle = "red";
         ctx.fillRect(food.x, food.y, box, box);
 
-        let snakeX = snake[0].x;
-        let snakeY = snake[0].y;
-
+        let snakeX = snake[0].x, snakeY = snake[0].y;
         if (dir === "LEFT") snakeX -= box;
         if (dir === "UP") snakeY -= box;
         if (dir === "RIGHT") snakeX += box;
         if (dir === "DOWN") snakeY += box;
 
-        if (snakeX === food.x && snakeY === food.y) {
+        if (snakeX === food.x && snakeY === food.y){
           snakePoints++;
           snakeScoreEl.textContent = "Puntos: " + snakePoints;
           food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
@@ -284,20 +243,15 @@
         }
 
         const newHead = { x: snakeX, y: snakeY };
-
-        if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
+        if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)){
           resetSnake();
           return;
         }
-
         snake.unshift(newHead);
       }
-
       setInterval(drawSnake, 100);
 
-      /* ============================
-         Space Invaders (controles móviles)
-         ============================ */
+      /* Space Invaders */
       const canvas2 = document.getElementById("spaceGame");
       const ctx2 = canvas2.getContext("2d");
       let ship = { x: 180, y: 350, w: 40, h: 16 };
@@ -307,11 +261,11 @@
       let enemySpeed = 0.5;
       const spaceStatus = document.getElementById("spaceStatus");
 
-      function createEnemies() {
+      function createEnemies(){
         enemies = [];
-        for (let row = 0; row < 3; row++) {
-          for (let col = 0; col < 5; col++) {
-            enemies.push({ x: col * 60 + 30, y: row * 40 + 30, w: 30, h: 18, alive: true });
+        for (let row=0; row<3; row++){
+          for (let col=0; col<5; col++){
+            enemies.push({ x: col*60+30, y: row*40+30, w:30, h:18, alive:true });
           }
         }
       }
@@ -320,16 +274,16 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") ship.x = Math.max(0, ship.x - 20);
         if (e.key === "ArrowRight") ship.x = Math.min(canvas2.width - ship.w, ship.x + 20);
-        if (e.key === " ") bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 });
+        if (e.key === " ") bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 });
       });
 
       // Mobile controls
       const spLeft = document.getElementById("spaceLeft"), spRight = document.getElementById("spaceRight"), spFire = document.getElementById("spaceFire");
       if (spLeft) { spLeft.addEventListener("touchstart", e => { e.preventDefault(); ship.x = Math.max(0, ship.x - 20); }, { passive:false }); spLeft.addEventListener("click", ()=> ship.x = Math.max(0, ship.x - 20)); }
       if (spRight) { spRight.addEventListener("touchstart", e => { e.preventDefault(); ship.x = Math.min(canvas2.width - ship.w, ship.x + 20); }, { passive:false }); spRight.addEventListener("click", ()=> ship.x = Math.min(canvas2.width - ship.w, ship.x + 20)); }
-      if (spFire) { spFire.addEventListener("touchstart", e => { e.preventDefault(); bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 }); }, { passive:false }); spFire.addEventListener("click", ()=> bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y, w: 4, h: 10 })); }
+      if (spFire) { spFire.addEventListener("touchstart", e => { e.preventDefault(); bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 }); }, { passive:false }); spFire.addEventListener("click", ()=> bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w:4, h:10 })); }
 
-      function updateEnemies() {
+      function updateEnemies(){
         let minX = Infinity, maxX = -Infinity;
         enemies.forEach(e => { if (!e.alive) return; minX = Math.min(minX, e.x); maxX = Math.max(maxX, e.x + e.w); });
         if (minX === Infinity) return;
@@ -338,24 +292,18 @@
         enemies.forEach(e => { if (e.alive) e.x += enemyDir * enemySpeed; });
       }
 
-      function drawSpace() {
-        ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-
-        ctx2.fillStyle = "lime";
-        ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
-
-        ctx2.fillStyle = "yellow";
-        bullets.forEach(b => { ctx2.fillRect(b.x, b.y, b.w, b.h); b.y -= 6; });
-
-        ctx2.fillStyle = "red";
-        enemies.forEach(e => { if (e.alive) ctx2.fillRect(e.x, e.y, e.w, e.h); });
+      function drawSpace(){
+        ctx2.clearRect(0,0,canvas2.width,canvas2.height);
+        ctx2.fillStyle = "lime"; ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
+        ctx2.fillStyle = "yellow"; bullets.forEach(b => { ctx2.fillRect(b.x,b.y,b.w,b.h); b.y -= 6; });
+        ctx2.fillStyle = "red"; enemies.forEach(e => { if (e.alive) ctx2.fillRect(e.x,e.y,e.w,e.h); });
 
         bullets = bullets.filter(b => {
           if (b.y < 0) return false;
-          for (let i = 0; i < enemies.length; i++) {
+          for (let i=0;i<enemies.length;i++){
             const e = enemies[i];
             if (!e.alive) continue;
-            if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+            if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y){
               e.alive = false;
               return false;
             }
@@ -366,18 +314,17 @@
         updateEnemies();
 
         const anyAlive = enemies.some(e => e.alive);
-        if (!anyAlive) {
+        if (!anyAlive){
           spaceStatus.textContent = "¡Ganaste! Reiniciando...";
-          setTimeout(() => { createEnemies(); bullets = []; spaceStatus.textContent = ""; }, 1500);
+          setTimeout(()=>{ createEnemies(); bullets = []; spaceStatus.textContent = ""; }, 1500);
         } else {
           const reached = enemies.some(e => e.alive && e.y + e.h >= ship.y);
-          if (reached) {
+          if (reached){
             spaceStatus.textContent = "Has sido alcanzado. Reiniciando...";
-            setTimeout(() => { createEnemies(); ship.x = 180; bullets = []; spaceStatus.textContent = ""; }, 1500);
+            setTimeout(()=>{ createEnemies(); ship.x = 180; bullets = []; spaceStatus.textContent = ""; }, 1500);
           }
         }
       }
-
       setInterval(drawSpace, 40);
 
       // small passive touchstart to improve mobile UX
