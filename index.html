@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Mi página Delfi - Emulador System 7.5.3 (v1.9)</title>
+    <title>Mi página Delfi - Emulador System 7.5.3 (v2.1)</title>
     <style>
       :root{
         --bg:#0b0b0f; --card:#121218; --accent:#0af; --muted:#9fb; --text:#e9f3ff;
+        --active:#ffd54f; --inactive:#2b2f36;
       }
 
       /* --- Layout básico --- */
@@ -43,11 +44,17 @@
       .fullscreen-btn{background:var(--accent);color:#001;padding:8px 12px;border-radius:8px;font-weight:700;border:none;cursor:pointer}
       .kbd-hint{font-size:0.9rem;color:var(--muted);text-align:center}
 
+      /* --- Key indicators --- */
+      .key-indicators{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+      .keys-block{display:flex;gap:6px;align-items:center}
+      .key{width:44px;height:44px;border-radius:8px;background:var(--inactive);display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;box-shadow:inset 0 -4px rgba(0,0,0,0.12)}
+      .key.active{background:var(--active);color:#000;box-shadow:0 6px 18px rgba(255,213,79,0.12)}
+      .label{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:6px}
+
       /* --- Mobile adjustments --- */
       @media (max-width:720px){ .embed{height:420px} .card{padding:12px} #game-area, canvas{width:320px;height:320px} .logo-canal{width:140px;height:140px} }
 
       /* --- Touch-action: only on interactive elements --- */
-      /* Allow normal scrolling by default; restrict gestures only inside interactive areas */
       #game-area,
       canvas,
       .controls,
@@ -106,33 +113,55 @@
       </section>
 
       <section id="snake" class="card">
-        <h2>🐍 Snake</h2>
+        <h2>🐍 Snake (controles: WASD)</h2>
         <canvas id="snakeGame" width="400" height="400" aria-label="Canvas Snake"></canvas>
         <p class="center" id="snakeScore">Puntos: 0</p>
-        <p class="note">Usa las flechas para mover. Si chocas, el juego reinicia.</p>
+        <p class="note">Usa WASD para mover. En móvil, usa los botones táctiles.</p>
 
         <div class="controls" id="snakeControls" aria-hidden="false">
           <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
-            <button class="control-btn" id="snakeUp">↑</button>
+            <button class="control-btn" id="snakeUp">W</button>
             <div style="display:flex;gap:6px">
-              <button class="control-btn" id="snakeLeft">←</button>
-              <button class="control-btn" id="snakeDown">↓</button>
-              <button class="control-btn" id="snakeRight">→</button>
+              <button class="control-btn" id="snakeLeft">A</button>
+              <button class="control-btn" id="snakeDown">S</button>
+              <button class="control-btn" id="snakeRight">D</button>
             </div>
           </div>
+        </div>
+
+        <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+          <div class="keys-block">
+            <div class="key" id="keyW">W</div>
+            <div class="key" id="keyA">A</div>
+            <div class="key" id="keyS">S</div>
+            <div class="key" id="keyD">D</div>
+          </div>
+          <div style="width:12px"></div>
+          <div class="label">Snake: WASD</div>
         </div>
       </section>
 
       <section id="space" class="card">
-        <h2>👾 Space Invaders</h2>
+        <h2>👾 Space Invaders (controles: Flechas, disparo: Z)</h2>
         <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
         <p class="center" id="spaceStatus"></p>
-        <p class="note">Flechas para mover, barra espaciadora para disparar.</p>
+        <p class="note">Flechas para mover, tecla Z para disparar. En móvil, usa los botones táctiles.</p>
 
         <div class="controls" id="spaceControls">
           <button class="control-btn" id="spaceLeft">←</button>
-          <button class="control-btn" id="spaceFire">FIRE</button>
+          <button class="control-btn" id="spaceFire">Z</button>
           <button class="control-btn" id="spaceRight">→</button>
+        </div>
+
+        <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+          <div class="keys-block">
+            <div class="key" id="keyLeft">←</div>
+            <div class="key" id="keyRight">→</div>
+            <div style="width:12px"></div>
+            <div class="key" id="keyZ">Z</div>
+          </div>
+          <div style="width:12px"></div>
+          <div class="label">Space: Flechas + Z</div>
         </div>
       </section>
 
@@ -177,22 +206,69 @@
     </main>
 
     <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
-    <div class="version">v1.9</div>
+    <div class="version">v2.1</div>
 
     <!-- Hidden input used to trigger mobile keyboard and capture key events -->
     <input id="kbdFocus" type="text" inputmode="none" aria-hidden="true" />
 
     <script>
       /* ============================================================
-         v1.9 - Key handling + selective touch handling + games + embed
-         - Prevent page scroll from arrow/space only when interacting
-           with games or the embed container (fix for PC arrow scroll)
-         - Allow normal page scroll elsewhere
+         v2.1 - Visual key indicators, sensitivity config, simple sounds
+         - Snake: WASD
+         - Space: Arrows + Z (fire)
+         - On-screen key lights for feedback
+         - Movement sensitivity variables for hold-to-repeat
+         - Simple WebAudio beeps for eat/fire
          ============================================================ */
 
-      /* --- 1) Prevent default scrolling for arrow/space only when interacting --- */
+      /* -------------------------
+         Configurable sensitivity
+         ------------------------- */
+      const CONFIG = {
+        snakeStepInterval: 100,      // ms between snake ticks
+        snakeHoldRepeat: 120,        // ms hold-to-repeat for snake mobile buttons
+        spaceHoldRepeat: 80,         // ms hold-to-repeat for space mobile buttons
+        shipStep: 6,                 // pixels per hold step for ship
+        shipKeyStep: 20              // pixels per keyboard arrow press
+      };
+
+      /* -------------------------
+         Simple sound helper (WebAudio)
+         ------------------------- */
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const audioCtx = AudioCtx ? new AudioCtx() : null;
+
+      function beep(frequency = 440, duration = 0.08, type = 'sine', volume = 0.06) {
+        if (!audioCtx) return;
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = frequency;
+        g.gain.value = volume;
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        setTimeout(()=>{ o.stop(); }, duration * 1000);
+      }
+
+      /* -------------------------
+         Utility: key indicator toggles
+         ------------------------- */
+      function setKeyActive(id, active=true) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (active) el.classList.add('active'); else el.classList.remove('active');
+      }
+
+      function flashKey(id, ms=120) {
+        setKeyActive(id, true);
+        setTimeout(()=> setKeyActive(id, false), ms);
+      }
+
+      /* ============================================================
+         1) Prevent default scrolling for relevant keys only when interacting
+         ============================================================ */
       (function() {
-        // Elements considered interactive (games, controls, embed area)
         const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '#embedContainer', '.controls', '.embed'];
         const interactiveEls = interactiveSelectors
           .map(sel => Array.from(document.querySelectorAll(sel)))
@@ -207,30 +283,26 @@
           return false;
         }
 
-        // Keys to intercept
-        const keysToBlock = new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ']);
+        const keysToBlock = new Set(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','z']);
 
         document.addEventListener('keydown', function(e) {
-          // Only care about relevant keys
-          if (!keysToBlock.has(e.key)) return;
+          const key = (e.key || '').toLowerCase();
+          if (!keysToBlock.has(key)) return;
 
-          // If focus is on an input/textarea/contentEditable, do not block
           const active = document.activeElement;
           if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
             return;
           }
 
-          // If the event target is inside an interactive area, prevent default scroll
           if (isInsideInteractive(e.target)) {
             e.preventDefault();
-            // Let existing game handlers receive the event normally
           }
         }, { passive: false });
       })();
 
-      /* ============================
-         Selective touch handling: allow page scroll except when interacting with games/embed
-         ============================ */
+      /* ============================================================
+         2) Selective touch handling (allow page scroll except inside games)
+         ============================================================ */
       (function() {
         const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '.controls', '.embed', '#embedContainer'];
         const interactiveEls = interactiveSelectors
@@ -255,34 +327,19 @@
         }, { passive: true });
 
         document.addEventListener('touchmove', (e) => {
-          if (touchStartedInInteractive) {
-            e.preventDefault(); // prevent page scroll while interacting with game/embed
-          }
-        }, { passive: false });
-
-        document.addEventListener('touchend', () => {
-          touchStartedInInteractive = false;
-        }, { passive: true });
-
-        // Pointer events fallback
-        document.addEventListener('pointerdown', (e) => {
-          touchStartedInInteractive = isInsideInteractive(e.target);
-        }, { passive: true });
-
-        document.addEventListener('pointermove', (e) => {
           if (touchStartedInInteractive) e.preventDefault();
         }, { passive: false });
 
-        document.addEventListener('pointerup', () => {
-          touchStartedInInteractive = false;
-        }, { passive: true });
+        document.addEventListener('touchend', () => { touchStartedInInteractive = false; }, { passive: true });
+
+        document.addEventListener('pointerdown', (e) => { touchStartedInInteractive = isInsideInteractive(e.target); }, { passive: true });
+        document.addEventListener('pointermove', (e) => { if (touchStartedInInteractive) e.preventDefault(); }, { passive: false });
+        document.addEventListener('pointerup', () => { touchStartedInInteractive = false; }, { passive: true });
       })();
 
-      /* ============================
-         Juegos: Atrapa, Snake, Space Invaders
-         ============================ */
-
-      // Atrapa el cuadrado
+      /* ============================================================
+         3) Atrapa el cuadrado
+         ============================================================ */
       (function(){
         const square = document.getElementById("square");
         const gameArea = document.getElementById("game-area");
@@ -298,7 +355,7 @@
           square.style.top = y + "px";
         }
 
-        function addPoint() { score++; scoreDisplay.textContent = "Puntos: " + score; moveSquare(); }
+        function addPoint() { score++; scoreDisplay.textContent = "Puntos: " + score; moveSquare(); beep(880,0.06,'sine',0.06); }
 
         square.addEventListener("click", addPoint);
         square.addEventListener("touchstart", function(e){ e.preventDefault(); addPoint(); }, { passive:false });
@@ -307,7 +364,9 @@
         moveSquare();
       })();
 
-      // Snake
+      /* ============================================================
+         4) Snake (WASD) with visual keys and hold-to-repeat mobile buttons
+         ============================================================ */
       (function(){
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
@@ -325,14 +384,22 @@
           if (newDir === "DOWN" && dir === "UP") return;
           dir = newDir;
         }
-        // expose setDir globally for keyboard helper
         window.setDir = setDir;
 
+        // WASD keyboard
         document.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowLeft") setDir("LEFT");
-          else if (e.key === "ArrowUp") setDir("UP");
-          else if (e.key === "ArrowRight") setDir("RIGHT");
-          else if (e.key === "ArrowDown") setDir("DOWN");
+          const k = (e.key || '').toLowerCase();
+          if (k === 'a') { setDir("LEFT"); setKeyActive('keyA', true); }
+          else if (k === 'w') { setDir("UP"); setKeyActive('keyW', true); }
+          else if (k === 'd') { setDir("RIGHT"); setKeyActive('keyD', true); }
+          else if (k === 's') { setDir("DOWN"); setKeyActive('keyS', true); }
+        });
+        document.addEventListener("keyup", (e) => {
+          const k = (e.key || '').toLowerCase();
+          if (k === 'a') setKeyActive('keyA', false);
+          else if (k === 'w') setKeyActive('keyW', false);
+          else if (k === 'd') setKeyActive('keyD', false);
+          else if (k === 's') setKeyActive('keyS', false);
         });
 
         function collision(head, array){
@@ -368,6 +435,7 @@
             snakePoints++;
             snakeScoreEl.textContent = "Puntos: " + snakePoints;
             food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+            beep(660,0.08,'triangle',0.08);
           } else {
             snake.pop();
           }
@@ -381,10 +449,10 @@
         }
 
         // Hold-to-repeat helpers for mobile controls
-        function addHoldBehavior(button, onAction) {
+        function addHoldBehavior(button, onAction, interval=CONFIG.snakeHoldRepeat) {
           let holdInterval = null;
-          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, 120); };
-          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } };
+          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, interval); button.classList.add('active'); };
+          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } button.classList.remove('active'); };
           button.addEventListener('touchstart', start, { passive:false });
           button.addEventListener('mousedown', start);
           button.addEventListener('touchend', stop);
@@ -394,19 +462,21 @@
         }
 
         const sUp = document.getElementById("snakeUp"), sLeft = document.getElementById("snakeLeft"), sDown = document.getElementById("snakeDown"), sRight = document.getElementById("snakeRight");
-        if (sUp) addHoldBehavior(sUp, ()=> setDir("UP"));
-        if (sLeft) addHoldBehavior(sLeft, ()=> setDir("LEFT"));
-        if (sDown) addHoldBehavior(sDown, ()=> setDir("DOWN"));
-        if (sRight) addHoldBehavior(sRight, ()=> setDir("RIGHT"));
+        if (sUp) addHoldBehavior(sUp, ()=> { setDir("UP"); flashKey('keyW',80); });
+        if (sLeft) addHoldBehavior(sLeft, ()=> { setDir("LEFT"); flashKey('keyA',80); });
+        if (sDown) addHoldBehavior(sDown, ()=> { setDir("DOWN"); flashKey('keyS',80); });
+        if (sRight) addHoldBehavior(sRight, ()=> { setDir("RIGHT"); flashKey('keyD',80); });
 
-        setInterval(drawSnake, 100);
+        setInterval(drawSnake, CONFIG.snakeStepInterval);
       })();
 
-      // Space Invaders
+      /* ============================================================
+         5) Space Invaders (Arrows + Z) with visual keys and sounds
+         ============================================================ */
       (function(){
         const canvas2 = document.getElementById("spaceGame");
         const ctx2 = canvas2.getContext("2d");
-        window.ship = { x: 180, y: 350, w: 40, h: 16 }; // expose ship for keyboard helper
+        window.ship = { x: 180, y: 350, w: 40, h: 16 };
         window.bullets = window.bullets || [];
         let enemies = [];
         let enemyDir = 1;
@@ -423,17 +493,25 @@
         }
         createEnemies();
 
+        // Keyboard: arrows for move, Z for fire
         document.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowLeft") window.ship.x = Math.max(0, window.ship.x - 20);
-          if (e.key === "ArrowRight") window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + 20);
-          if (e.key === " ") window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 });
+          const k = (e.key || '').toLowerCase();
+          if (k === 'arrowleft') { window.ship.x = Math.max(0, window.ship.x - CONFIG.shipKeyStep); setKeyActive('keyLeft', true); }
+          if (k === 'arrowright') { window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + CONFIG.shipKeyStep); setKeyActive('keyRight', true); }
+          if (k === 'z') { window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); setKeyActive('keyZ', true); }
+        });
+        document.addEventListener("keyup", (e) => {
+          const k = (e.key || '').toLowerCase();
+          if (k === 'arrowleft') setKeyActive('keyLeft', false);
+          if (k === 'arrowright') setKeyActive('keyRight', false);
+          if (k === 'z') setKeyActive('keyZ', false);
         });
 
         // Hold-to-repeat for mobile controls
-        function addHoldBehavior(button, onAction) {
+        function addHoldBehavior(button, onAction, interval=CONFIG.spaceHoldRepeat) {
           let holdInterval = null;
-          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, 80); };
-          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } };
+          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, interval); button.classList.add('active'); };
+          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } button.classList.remove('active'); };
           button.addEventListener('touchstart', start, { passive:false });
           button.addEventListener('mousedown', start);
           button.addEventListener('touchend', stop);
@@ -443,9 +521,9 @@
         }
 
         const spLeft = document.getElementById("spaceLeft"), spRight = document.getElementById("spaceRight"), spFire = document.getElementById("spaceFire");
-        if (spLeft) addHoldBehavior(spLeft, ()=> window.ship.x = Math.max(0, window.ship.x - 6));
-        if (spRight) addHoldBehavior(spRight, ()=> window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + 6));
-        if (spFire) addHoldBehavior(spFire, ()=> window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }));
+        if (spLeft) addHoldBehavior(spLeft, ()=> { window.ship.x = Math.max(0, window.ship.x - CONFIG.shipStep); flashKey('keyLeft',80); });
+        if (spRight) addHoldBehavior(spRight, ()=> { window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + CONFIG.shipStep); flashKey('keyRight',80); });
+        if (spFire) addHoldBehavior(spFire, ()=> { window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); flashKey('keyZ',80); });
 
         function updateEnemies(){
           let minX = Infinity, maxX = -Infinity;
@@ -469,6 +547,7 @@
               if (!e.alive) continue;
               if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y){
                 e.alive = false;
+                beep(520,0.06,'square',0.06);
                 return false;
               }
             }
@@ -492,9 +571,9 @@
         setInterval(drawSpace, 40);
       })();
 
-      /* ============================
-         Emulador: carga condicional, fullscreen y teclado móvil
-         ============================ */
+      /* ============================================================
+         6) Emulador: carga condicional, fullscreen y teclado móvil mapping
+         ============================================================ */
       (function(){
         const embedUrl = "https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650";
         const loadBtn = document.getElementById("loadEmulatorBtn");
@@ -568,13 +647,18 @@
           });
         }
 
-        // Capture keys from hidden input and map to game controls
+        // Map mobile keyboard input to game controls (WASD, arrows, Z)
         kbdFocus.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowLeft') { window.setDir && window.setDir('LEFT'); window.ship && (window.ship.x = Math.max(0, window.ship.x - 20)); }
-          else if (e.key === 'ArrowRight') { window.setDir && window.setDir('RIGHT'); window.ship && (window.ship.x = Math.min(document.getElementById('spaceGame').width - window.ship.w, window.ship.x + 20)); }
-          else if (e.key === 'ArrowUp') { window.setDir && window.setDir('UP'); }
-          else if (e.key === 'ArrowDown') { window.setDir && window.setDir('DOWN'); }
-          else if (e.key === ' ') { if (window.ship) { window.bullets = window.bullets || []; window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); } }
+          const k = (e.key || '').toLowerCase();
+          // Snake WASD
+          if (k === 'a') { window.setDir && window.setDir('LEFT'); flashKey('keyA',80); }
+          else if (k === 'w') { window.setDir && window.setDir('UP'); flashKey('keyW',80); }
+          else if (k === 'd') { window.setDir && window.setDir('RIGHT'); flashKey('keyD',80); }
+          else if (k === 's') { window.setDir && window.setDir('DOWN'); flashKey('keyS',80); }
+          // Space Invaders arrows + z
+          else if (k === 'arrowleft') { window.ship && (window.ship.x = Math.max(0, window.ship.x - CONFIG.shipKeyStep)); flashKey('keyLeft',80); }
+          else if (k === 'arrowright') { window.ship && (window.ship.x = Math.min(document.getElementById('spaceGame').width - window.ship.w, window.ship.x + CONFIG.shipKeyStep)); flashKey('keyRight',80); }
+          else if (k === 'z') { if (window.ship) { window.bullets = window.bullets || []; window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); flashKey('keyZ',80); } }
           e.preventDefault();
         });
 
