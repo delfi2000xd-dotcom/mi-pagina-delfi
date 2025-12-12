@@ -2,69 +2,50 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Mi página Delfi - Emulador System 7.5.3 (v2.1)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Delfi - Juegos y Emuladores (v2.2)</title>
     <style>
       :root{
         --bg:#0b0b0f; --card:#121218; --accent:#0af; --muted:#9fb; --text:#e9f3ff;
         --active:#ffd54f; --inactive:#2b2f36;
       }
-
-      /* --- Layout básico --- */
-      html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased;user-select:none}
-      header{position:sticky;top:0;background:#111;border-bottom:1px solid rgba(255,255,255,0.03);z-index:30}
-      nav{display:flex;gap:12px;justify-content:center;padding:12px}
+      html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+      header{position:sticky;top:0;background:#111;border-bottom:1px solid rgba(255,255,255,0.03);z-index:40}
+      nav{display:flex;gap:10px;justify-content:center;padding:12px}
       nav a{color:var(--accent);text-decoration:none;font-weight:600}
-      nav a:hover{color:#8ef}
-      main{padding:18px 12px 110px;max-width:1100px;margin:0 auto}
-      .hero{ text-align:center; margin:8px 0 18px }
-      .logo-canal{ width:160px; height:160px; object-fit:cover; border-radius:50%; border:4px solid #00f; display:block; margin:0 auto 12px; box-shadow:0 8px 30px rgba(10,200,255,0.08) }
-      .card{ background:var(--card); border-radius:12px; padding:18px; margin:16px auto; box-shadow:0 8px 24px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.03); max-width:1000px }
-      .center{text-align:center}
-      .btn{display:inline-block;background:var(--accent);color:#001;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
-      .btn:hover{background:#09c}
-      footer{text-align:center;color:#a9b7c6;margin:28px 0 60px}
-      .version{position:fixed;bottom:10px;right:10px;background:#222;color:var(--accent);padding:6px 10px;border-radius:6px;font-size:0.9rem;opacity:0.95;z-index:40}
-      .note{color:var(--muted);font-size:0.92rem;text-align:center;margin-top:8px}
-
-      /* --- Juegos --- */
+      main{max-width:1100px;margin:18px auto;padding:12px}
+      .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.03)}
+      h1,h2{margin:8px 0}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:var(--accent);color:#001;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700;border:none;cursor:pointer}
+      .btn.alt{background:#09c;color:#001}
+      .note{color:var(--muted);font-size:0.95rem}
+      .small{font-size:0.9rem;color:var(--muted)}
+      /* Games */
       #game-area{width:400px;height:400px;border:2px solid #00f;margin:16px auto;position:relative;background:#111}
       #square{width:40px;height:40px;background:#0f0;position:absolute;cursor:pointer;border-radius:6px}
       #score{ text-align:center; font-size:1.1rem; margin-bottom:8px }
       canvas{display:block;margin:12px auto;border-radius:8px;border:2px solid #234;background:#000}
-
-      /* --- Infografía --- */
-      .infografia{background:linear-gradient(135deg,#0af,#09c);color:#fff;padding:18px;border-radius:12px;text-align:center;font-size:1.05rem;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
-
-      /* --- Emulador --- */
+      /* Key indicators */
+      .key-indicators{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+      .keys-block{display:flex;gap:6px;align-items:center}
+      .key{width:44px;height:44px;border-radius:8px;background:var(--inactive);display:flex;align-items:center;justify-content:center;color:#000;font-weight:800}
+      .key.active{background:var(--active);color:#000;box-shadow:0 6px 18px rgba(255,213,79,0.12)}
+      .label{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:6px}
+      /* Emulador Infinite Mac */
       .embed-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
       .embed{width:100%;max-width:900px;height:600px;border:1px solid #222;border-radius:8px;display:block;margin:0 auto;background:#000}
       .embed-controls{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
       .kbd-btn{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;font-weight:700}
-      .fullscreen-btn{background:var(--accent);color:#001;padding:8px 12px;border-radius:8px;font-weight:700;border:none;cursor:pointer}
-      .kbd-hint{font-size:0.9rem;color:var(--muted);text-align:center}
-
-      /* --- Key indicators --- */
-      .key-indicators{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-      .keys-block{display:flex;gap:6px;align-items:center}
-      .key{width:44px;height:44px;border-radius:8px;background:var(--inactive);display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;box-shadow:inset 0 -4px rgba(0,0,0,0.12)}
-      .key.active{background:var(--active);color:#000;box-shadow:0 6px 18px rgba(255,213,79,0.12)}
-      .label{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:6px}
-
-      /* --- Mobile adjustments --- */
-      @media (max-width:720px){ .embed{height:420px} .card{padding:12px} #game-area, canvas{width:320px;height:320px} .logo-canal{width:140px;height:140px} }
-
-      /* --- Touch-action: only on interactive elements --- */
-      #game-area,
-      canvas,
-      .controls,
-      .embed {
-        touch-action: none;
-      }
-      main, header, footer, .card {
-        touch-action: auto;
-      }
-
+      /* SM64 canvas & log */
+      #n64Canvas{width:100%;max-width:900px;height:480px;background:#000;border-radius:8px;border:1px solid #222;display:block;margin:12px auto}
+      #log{font-family:monospace;font-size:0.85rem;color:#cfe;max-height:160px;overflow:auto;padding:8px;background:#071018;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+      label.file-label{display:inline-block;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer}
+      input[type=file]{display:none}
+      @media (max-width:720px){ .embed{height:420px} #game-area, canvas, #n64Canvas{width:320px;height:320px} .logo-canal{width:140px;height:140px} }
+      /* Touch-action: only on interactive elements */
+      #game-area, canvas, .controls, .embed, #embedContainer, #n64Canvas { touch-action: none; }
+      main, header, footer, .card { touch-action: auto; }
       /* Hidden input to trigger mobile keyboard */
       #kbdFocus{position:fixed;left:-9999px;top:auto;width:1px;height:1px;opacity:0}
     </style>
@@ -74,128 +55,141 @@
       <nav>
         <a href="#inicio">Inicio</a>
         <a href="#canal">Canal</a>
-        <a href="#infografia">Infografía</a>
-        <a href="#juego">Atrapa</a>
-        <a href="#snake">Snake</a>
-        <a href="#space">Space</a>
-        <a href="#emulador">Emulador</a>
+        <a href="#juegos">Juegos</a>
+        <a href="#emulador">Infinite Mac</a>
+        <a href="#sm64">SM64</a>
         <a href="#contacto">Contacto</a>
       </nav>
     </header>
 
     <main id="inicio">
-      <section class="hero">
-        <img src="imagenes/canal.png" alt="Logo de mi canal" class="logo-canal">
+      <section class="card center">
+        <img src="imagenes/canal.png" alt="Logo" style="width:140px;border-radius:50%;display:block;margin:0 auto 12px">
         <h1 class="center">Hola, soy Delfi</h1>
-        <p class="center note">Bienvenido a mi página web. Aquí comparto mi canal, mis redes, mis juegos y emuladores.</p>
+        <p class="note center">Bienvenido a mi página con juegos y emuladores. Aquí puedes jugar, embeber Infinite Mac y cargar tu copia legítima de SM64 para ejecutarla localmente.</p>
       </section>
 
-      <section id="canal" class="card center">
-        <h2>🎥 Mi canal de YouTube</h2>
-        <p>Visita mi canal para ver mis videos y suscribirte.</p>
-        <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank" rel="noopener">👉 Ir a mi canal</a>
+      <section id="canal" class="card">
+        <h2>🎥 Mi canal</h2>
+        <p class="small">Visita mi canal para ver mis videos y suscribirte.</p>
+        <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank" rel="noopener">Ir a mi canal</a>
       </section>
 
-      <section id="infografia" class="card infografia">
-        <h2>📌 Mini Infografía</h2>
-        <p>Hola soy Delfi, me gusta la tecnología nueva y antigua.<br>
-        Estoy trabajando en un juego de Roblox y me gustaría que me siguieras.<br>
-        También subo videos. ¡Gracias por leer esto! 🙂</p>
-      </section>
+      <section id="juegos" class="card">
+        <h2>🎮 Juegos</h2>
 
-      <section id="juego" class="card">
-        <h2>🎮 Minijuego: Atrapa el cuadrado</h2>
-        <div id="score">Puntos: 0</div>
-        <div id="game-area" aria-label="Área de juego Atrapa el cuadrado">
-          <div id="square" role="button" aria-label="Cuadrado objetivo"></div>
+        <!-- Atrapa -->
+        <div style="margin-bottom:18px">
+          <h3>Atrapa el cuadrado</h3>
+          <div id="score">Puntos: 0</div>
+          <div id="game-area" aria-label="Área de juego Atrapa el cuadrado">
+            <div id="square" role="button" aria-label="Cuadrado objetivo"></div>
+          </div>
+          <p class="small">Toca el cuadrado para sumar puntos.</p>
         </div>
-        <p class="note">Toca el cuadrado para sumar puntos. En móvil, toca directamente.</p>
-      </section>
 
-      <section id="snake" class="card">
-        <h2>🐍 Snake (controles: WASD)</h2>
-        <canvas id="snakeGame" width="400" height="400" aria-label="Canvas Snake"></canvas>
-        <p class="center" id="snakeScore">Puntos: 0</p>
-        <p class="note">Usa WASD para mover. En móvil, usa los botones táctiles.</p>
-
-        <div class="controls" id="snakeControls" aria-hidden="false">
-          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
-            <button class="control-btn" id="snakeUp">W</button>
-            <div style="display:flex;gap:6px">
-              <button class="control-btn" id="snakeLeft">A</button>
-              <button class="control-btn" id="snakeDown">S</button>
-              <button class="control-btn" id="snakeRight">D</button>
+        <!-- Snake -->
+        <div style="margin-bottom:18px">
+          <h3>Snake (WASD)</h3>
+          <canvas id="snakeGame" width="400" height="400" aria-label="Canvas Snake"></canvas>
+          <p class="small" id="snakeScore">Puntos: 0</p>
+          <div class="controls" id="snakeControls">
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+              <button class="control-btn" id="snakeUp">W</button>
+              <div style="display:flex;gap:6px">
+                <button class="control-btn" id="snakeLeft">A</button>
+                <button class="control-btn" id="snakeDown">S</button>
+                <button class="control-btn" id="snakeRight">D</button>
+              </div>
             </div>
           </div>
+          <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+            <div class="keys-block">
+              <div class="key" id="keyW">W</div>
+              <div class="key" id="keyA">A</div>
+              <div class="key" id="keyS">S</div>
+              <div class="key" id="keyD">D</div>
+            </div>
+            <div class="label">Snake: WASD</div>
+          </div>
         </div>
 
-        <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
-          <div class="keys-block">
-            <div class="key" id="keyW">W</div>
-            <div class="key" id="keyA">A</div>
-            <div class="key" id="keyS">S</div>
-            <div class="key" id="keyD">D</div>
+        <!-- Space -->
+        <div>
+          <h3>Space Invaders (Flechas + Z)</h3>
+          <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
+          <p class="small" id="spaceStatus"></p>
+          <div class="controls" id="spaceControls">
+            <button class="control-btn" id="spaceLeft">←</button>
+            <button class="control-btn" id="spaceFire">Z</button>
+            <button class="control-btn" id="spaceRight">→</button>
           </div>
-          <div style="width:12px"></div>
-          <div class="label">Snake: WASD</div>
+          <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+            <div class="keys-block">
+              <div class="key" id="keyLeft">←</div>
+              <div class="key" id="keyRight">→</div>
+              <div style="width:12px"></div>
+              <div class="key" id="keyZ">Z</div>
+            </div>
+            <div class="label">Space: Flechas + Z</div>
+          </div>
         </div>
       </section>
 
-      <section id="space" class="card">
-        <h2>👾 Space Invaders (controles: Flechas, disparo: Z)</h2>
-        <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
-        <p class="center" id="spaceStatus"></p>
-        <p class="note">Flechas para mover, tecla Z para disparar. En móvil, usa los botones táctiles.</p>
-
-        <div class="controls" id="spaceControls">
-          <button class="control-btn" id="spaceLeft">←</button>
-          <button class="control-btn" id="spaceFire">Z</button>
-          <button class="control-btn" id="spaceRight">→</button>
-        </div>
-
-        <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
-          <div class="keys-block">
-            <div class="key" id="keyLeft">←</div>
-            <div class="key" id="keyRight">→</div>
-            <div style="width:12px"></div>
-            <div class="key" id="keyZ">Z</div>
-          </div>
-          <div style="width:12px"></div>
-          <div class="label">Space: Flechas + Z</div>
-        </div>
-      </section>
-
-      <!-- Emulador: carga condicional y fallback móvil -->
+      <!-- Infinite Mac -->
       <section id="emulador" class="card">
         <h2>🖥️ Emulador Infinite Mac — System 7.5.3</h2>
-
-        <div id="emuladorControls" class="embed-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-          <div class="embed-controls" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-            <button id="loadEmulatorBtn" class="fullscreen-btn" style="background:#0af;color:#001;padding:8px 12px;border-radius:8px;font-weight:700;border:none;cursor:pointer;">
-              Cargar emulador aquí
-            </button>
-
-            <button id="openNewTabBtn" class="btn" style="background:#09c;color:#001;padding:8px 12px;border-radius:8px;font-weight:700;">
-              Abrir en nueva pestaña
-            </button>
-
-            <button id="emuladorFullscreen" class="kbd-btn" style="background:rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;font-weight:700;">
-              Pantalla completa (si está cargado)
-            </button>
-
-            <button id="openKeyboard" class="kbd-btn" style="background:rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;font-weight:700;">
-              Abrir teclado (móvil)
-            </button>
+        <div class="embed-wrap">
+          <div class="embed-controls" role="toolbar" aria-label="Controles del emulador">
+            <button class="fullscreen-btn" id="emuladorFullscreen">Pantalla completa</button>
+            <button class="kbd-btn" id="openKeyboard">Abrir teclado (móvil)</button>
+            <a class="btn alt" href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">Abrir en nueva pestaña</a>
           </div>
 
-          <div id="embedContainer" style="width:100%;max-width:900px;min-height:120px;display:flex;align-items:center;justify-content:center;">
-            <div id="embedPlaceholder" style="color:#9fb;text-align:center;padding:18px;">
-              Pulsa "Cargar emulador aquí" para iniciar el emulador en esta página. Si no funciona, usa "Abrir en nueva pestaña".
+          <div id="emuladorControls" style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div id="embedContainer" style="width:100%;max-width:900px;min-height:120px;display:flex;align-items:center;justify-content:center;">
+              <div id="embedPlaceholder" style="color:#9fb;text-align:center;padding:18px;">
+                Pulsa "Cargar emulador aquí" para iniciar el emulador en esta página. Si no funciona, usa "Abrir en nueva pestaña".
+              </div>
             </div>
+            <div style="display:flex;gap:8px">
+              <button id="loadInfiniteBtn" class="btn">Cargar emulador aquí</button>
+            </div>
+            <p class="small">Si el emulador va lento o no carga en tu móvil, abre en nueva pestaña para mejor compatibilidad.</p>
           </div>
-
-          <p class="note" style="margin-top:6px;">Si el emulador va lento o no carga en tu móvil, abre en nueva pestaña para mejor compatibilidad.</p>
         </div>
+      </section>
+
+      <!-- SM64 -->
+      <section id="sm64" class="card">
+        <h2>🎮 Super Mario 64 (tu ROM local)</h2>
+        <p class="note">Sube tu copia legítima (.z64/.n64/.v64). La ROM se ejecuta localmente en tu navegador y no se sube a ningún servidor.</p>
+
+        <div class="row" style="align-items:center">
+          <label class="file-label" for="romInput">Seleccionar ROM</label>
+          <input id="romInput" type="file" accept=".z64,.n64,.v64" />
+          <button id="loadSm64Btn" class="btn" disabled>Cargar ROM en emulador</button>
+          <button id="openSm64NewTab" class="btn alt">Abrir en nueva pestaña</button>
+        </div>
+
+        <div style="margin-top:10px">
+          <strong>Archivo:</strong> <span id="fileName">—</span> · <span id="fileSize">—</span>
+        </div>
+        <div style="margin-top:8px">
+          <strong>Formato detectado:</strong> <span id="romFormat">—</span>
+        </div>
+
+        <canvas id="n64Canvas" width="640" height="480" aria-label="Canvas del emulador N64"></canvas>
+
+        <div style="margin-top:8px">
+          <button id="n64Fullscreen" class="btn">Pantalla completa</button>
+          <button id="n64Pause" class="btn" style="background:#666">Pausar / Reanudar</button>
+        </div>
+
+        <h3 style="margin-top:12px">Registro</h3>
+        <div id="log">Estado: esperando ROM...</div>
+
+        <p class="small" style="margin-top:8px">Para que SM64 funcione embebido debes incluir el script/WASM del port que elijas y adaptar la llamada `startEmulator(romBuffer, canvas, onLog)` según su documentación.</p>
       </section>
 
       <section id="contacto" class="card center">
@@ -205,469 +199,277 @@
       </section>
     </main>
 
-    <footer>© 2025 Delfi. Todos los derechos reservados.</footer>
-    <div class="version">v2.1</div>
+    <footer style="text-align:center;color:#a9b7c6;margin:28px 0 60px">© 2025 Delfi. v2.2</footer>
 
     <!-- Hidden input used to trigger mobile keyboard and capture key events -->
     <input id="kbdFocus" type="text" inputmode="none" aria-hidden="true" />
 
     <script>
-      /* ============================================================
-         v2.1 - Visual key indicators, sensitivity config, simple sounds
-         - Snake: WASD
-         - Space: Arrows + Z (fire)
-         - On-screen key lights for feedback
-         - Movement sensitivity variables for hold-to-repeat
-         - Simple WebAudio beeps for eat/fire
-         ============================================================ */
-
-      /* -------------------------
-         Configurable sensitivity
-         ------------------------- */
-      const CONFIG = {
-        snakeStepInterval: 100,      // ms between snake ticks
-        snakeHoldRepeat: 120,        // ms hold-to-repeat for snake mobile buttons
-        spaceHoldRepeat: 80,         // ms hold-to-repeat for space mobile buttons
-        shipStep: 6,                 // pixels per hold step for ship
-        shipKeyStep: 20              // pixels per keyboard arrow press
-      };
-
-      /* -------------------------
-         Simple sound helper (WebAudio)
-         ------------------------- */
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      const audioCtx = AudioCtx ? new AudioCtx() : null;
-
-      function beep(frequency = 440, duration = 0.08, type = 'sine', volume = 0.06) {
-        if (!audioCtx) return;
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = type;
-        o.frequency.value = frequency;
-        g.gain.value = volume;
-        o.connect(g);
-        g.connect(audioCtx.destination);
-        o.start();
-        setTimeout(()=>{ o.stop(); }, duration * 1000);
+      /* ============================
+         Utilities
+         ============================ */
+      const logEl = document.getElementById('log');
+      function log(...args){
+        const line = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+        logEl.textContent = line + '\n' + logEl.textContent;
+        console.log(...args);
       }
+      function setKeyActive(id, active=true){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('active', !!active); }
+      function flashKey(id, ms=120){ setKeyActive(id,true); setTimeout(()=>setKeyActive(id,false), ms); }
 
-      /* -------------------------
-         Utility: key indicator toggles
-         ------------------------- */
-      function setKeyActive(id, active=true) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (active) el.classList.add('active'); else el.classList.remove('active');
-      }
-
-      function flashKey(id, ms=120) {
-        setKeyActive(id, true);
-        setTimeout(()=> setKeyActive(id, false), ms);
-      }
-
-      /* ============================================================
-         1) Prevent default scrolling for relevant keys only when interacting
-         ============================================================ */
-      (function() {
-        const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '#embedContainer', '.controls', '.embed'];
-        const interactiveEls = interactiveSelectors
-          .map(sel => Array.from(document.querySelectorAll(sel)))
-          .flat();
-
-        function isInsideInteractive(target) {
-          if (!target) return false;
-          for (const el of interactiveEls) {
-            if (!el) continue;
-            if (el === target || el.contains(target)) return true;
-          }
+      /* ============================
+         Prevent default scrolling for relevant keys only when interacting
+         ============================ */
+      (function(){
+        const interactiveSelectors = ['#game-area','#snakeGame','#spaceGame','#embedContainer','.controls','.embed','#n64Canvas'];
+        const interactiveEls = interactiveSelectors.map(s=>Array.from(document.querySelectorAll(s))).flat();
+        function isInsideInteractive(target){
+          if(!target) return false;
+          for(const el of interactiveEls){ if(!el) continue; if(el===target||el.contains(target)) return true; }
           return false;
         }
-
         const keysToBlock = new Set(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','z']);
-
-        document.addEventListener('keydown', function(e) {
-          const key = (e.key || '').toLowerCase();
-          if (!keysToBlock.has(key)) return;
-
+        document.addEventListener('keydown', function(e){
+          const key = (e.key||'').toLowerCase();
+          if(!keysToBlock.has(key)) return;
           const active = document.activeElement;
-          if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
-            return;
-          }
-
-          if (isInsideInteractive(e.target)) {
-            e.preventDefault();
-          }
-        }, { passive: false });
+          if(active && (active.tagName==='INPUT' || active.tagName==='TEXTAREA' || active.isContentEditable)) return;
+          if(isInsideInteractive(e.target)) e.preventDefault();
+        }, { passive:false });
       })();
 
-      /* ============================================================
-         2) Selective touch handling (allow page scroll except inside games)
-         ============================================================ */
-      (function() {
-        const interactiveSelectors = ['#game-area', '#snakeGame', '#spaceGame', '.controls', '.embed', '#embedContainer'];
-        const interactiveEls = interactiveSelectors
-          .map(sel => Array.from(document.querySelectorAll(sel)))
-          .flat();
-
-        function isInsideInteractive(target) {
-          if (!target) return false;
-          for (const el of interactiveEls) {
-            if (!el) continue;
-            if (el === target || el.contains(target)) return true;
-          }
+      /* ============================
+         Selective touch handling
+         ============================ */
+      (function(){
+        const interactiveSelectors = ['#game-area','#snakeGame','#spaceGame','.controls','.embed','#embedContainer','#n64Canvas'];
+        const interactiveEls = interactiveSelectors.map(s=>Array.from(document.querySelectorAll(s))).flat();
+        function isInsideInteractive(target){
+          if(!target) return false;
+          for(const el of interactiveEls){ if(!el) continue; if(el===target||el.contains(target)) return true; }
           return false;
         }
-
-        let touchStartedInInteractive = false;
-
-        document.addEventListener('touchstart', (e) => {
+        let touchStartedInInteractive=false;
+        document.addEventListener('touchstart', (e)=> {
           const t = e.targetTouches && e.targetTouches[0];
-          const target = t ? document.elementFromPoint(t.clientX, t.clientY) : e.target;
+          const target = t ? document.elementFromPoint(t.clientX,t.clientY) : e.target;
           touchStartedInInteractive = isInsideInteractive(target);
-        }, { passive: true });
-
-        document.addEventListener('touchmove', (e) => {
-          if (touchStartedInInteractive) e.preventDefault();
-        }, { passive: false });
-
-        document.addEventListener('touchend', () => { touchStartedInInteractive = false; }, { passive: true });
-
-        document.addEventListener('pointerdown', (e) => { touchStartedInInteractive = isInsideInteractive(e.target); }, { passive: true });
-        document.addEventListener('pointermove', (e) => { if (touchStartedInInteractive) e.preventDefault(); }, { passive: false });
-        document.addEventListener('pointerup', () => { touchStartedInInteractive = false; }, { passive: true });
+        }, { passive:true });
+        document.addEventListener('touchmove', (e)=> { if(touchStartedInInteractive) e.preventDefault(); }, { passive:false });
+        document.addEventListener('touchend', ()=> { touchStartedInInteractive=false; }, { passive:true });
+        document.addEventListener('pointerdown', (e)=> { touchStartedInInteractive = isInsideInteractive(e.target); }, { passive:true });
+        document.addEventListener('pointermove', (e)=> { if(touchStartedInInteractive) e.preventDefault(); }, { passive:false });
+        document.addEventListener('pointerup', ()=> { touchStartedInInteractive=false; }, { passive:true });
       })();
 
-      /* ============================================================
-         3) Atrapa el cuadrado
-         ============================================================ */
+      /* ============================
+         Atrapa el cuadrado
+         ============================ */
       (function(){
-        const square = document.getElementById("square");
-        const gameArea = document.getElementById("game-area");
-        const scoreDisplay = document.getElementById("score");
-        let score = 0;
-
-        function moveSquare() {
-          const maxX = Math.max(1, gameArea.clientWidth - square.clientWidth);
-          const maxY = Math.max(1, gameArea.clientHeight - square.clientHeight);
-          const x = Math.floor(Math.random() * maxX);
-          const y = Math.floor(Math.random() * maxY);
-          square.style.left = x + "px";
-          square.style.top = y + "px";
+        const square=document.getElementById('square'), gameArea=document.getElementById('game-area'), scoreDisplay=document.getElementById('score');
+        let score=0;
+        function moveSquare(){
+          const maxX=Math.max(1, gameArea.clientWidth - square.clientWidth);
+          const maxY=Math.max(1, gameArea.clientHeight - square.clientHeight);
+          const x=Math.floor(Math.random()*maxX), y=Math.floor(Math.random()*maxY);
+          square.style.left = x+'px'; square.style.top = y+'px';
         }
-
-        function addPoint() { score++; scoreDisplay.textContent = "Puntos: " + score; moveSquare(); beep(880,0.06,'sine',0.06); }
-
-        square.addEventListener("click", addPoint);
-        square.addEventListener("touchstart", function(e){ e.preventDefault(); addPoint(); }, { passive:false });
-
-        setInterval(moveSquare, 2000);
-        moveSquare();
+        function addPoint(){ score++; scoreDisplay.textContent='Puntos: '+score; moveSquare(); }
+        square.addEventListener('click', addPoint);
+        square.addEventListener('touchstart', function(e){ e.preventDefault(); addPoint(); }, { passive:false });
+        setInterval(moveSquare, 2000); moveSquare();
       })();
 
-      /* ============================================================
-         4) Snake (WASD) with visual keys and hold-to-repeat mobile buttons
-         ============================================================ */
+      /* ============================
+         Snake (WASD)
+         ============================ */
       (function(){
-        const canvas = document.getElementById("snakeGame");
-        const ctx = canvas.getContext("2d");
-        const box = 20;
-        let snake = [{ x: 9 * box, y: 10 * box }];
-        let food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
-        let dir = null;
-        let snakePoints = 0;
-        const snakeScoreEl = document.getElementById("snakeScore");
-
-        function setDir(newDir){
-          if (newDir === "LEFT" && dir === "RIGHT") return;
-          if (newDir === "RIGHT" && dir === "LEFT") return;
-          if (newDir === "UP" && dir === "DOWN") return;
-          if (newDir === "DOWN" && dir === "UP") return;
-          dir = newDir;
-        }
+        const canvas=document.getElementById('snakeGame'), ctx=canvas.getContext('2d');
+        const box=20; let snake=[{x:9*box,y:10*box}]; let food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box};
+        let dir=null, points=0; const scoreEl=document.getElementById('snakeScore');
+        function setDir(newDir){ if(newDir==='LEFT'&&dir==='RIGHT') return; if(newDir==='RIGHT'&&dir==='LEFT') return; if(newDir==='UP'&&dir==='DOWN') return; if(newDir==='DOWN'&&dir==='UP') return; dir=newDir; }
         window.setDir = setDir;
-
-        // WASD keyboard
-        document.addEventListener("keydown", (e) => {
-          const k = (e.key || '').toLowerCase();
-          if (k === 'a') { setDir("LEFT"); setKeyActive('keyA', true); }
-          else if (k === 'w') { setDir("UP"); setKeyActive('keyW', true); }
-          else if (k === 'd') { setDir("RIGHT"); setKeyActive('keyD', true); }
-          else if (k === 's') { setDir("DOWN"); setKeyActive('keyS', true); }
-        });
-        document.addEventListener("keyup", (e) => {
-          const k = (e.key || '').toLowerCase();
-          if (k === 'a') setKeyActive('keyA', false);
-          else if (k === 'w') setKeyActive('keyW', false);
-          else if (k === 'd') setKeyActive('keyD', false);
-          else if (k === 's') setKeyActive('keyS', false);
-        });
-
-        function collision(head, array){
-          for (let i = 0; i < array.length; i++) if (head.x === array[i].x && head.y === array[i].y) return true;
-          return false;
-        }
-
-        function resetSnake(){
-          snake = [{ x: 9 * box, y: 10 * box }];
-          dir = null;
-          snakePoints = 0;
-          snakeScoreEl.textContent = "Puntos: 0";
-          food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
-        }
-
-        function drawSnake(){
-          ctx.fillStyle = "#000";
-          ctx.fillRect(0,0,canvas.width,canvas.height);
-          for (let i=0;i<snake.length;i++){
-            ctx.fillStyle = i===0 ? "lime" : "white";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-          }
-          ctx.fillStyle = "red";
-          ctx.fillRect(food.x, food.y, box, box);
-
-          let snakeX = snake[0].x, snakeY = snake[0].y;
-          if (dir === "LEFT") snakeX -= box;
-          if (dir === "UP") snakeY -= box;
-          if (dir === "RIGHT") snakeX += box;
-          if (dir === "DOWN") snakeY += box;
-
-          if (snakeX === food.x && snakeY === food.y){
-            snakePoints++;
-            snakeScoreEl.textContent = "Puntos: " + snakePoints;
-            food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
-            beep(660,0.08,'triangle',0.08);
-          } else {
-            snake.pop();
-          }
-
-          const newHead = { x: snakeX, y: snakeY };
-          if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)){
-            resetSnake();
-            return;
-          }
+        document.addEventListener('keydown', (e)=>{ const k=(e.key||'').toLowerCase(); if(k==='a'){ setDir('LEFT'); setKeyActive('keyA',true);} else if(k==='w'){ setDir('UP'); setKeyActive('keyW',true);} else if(k==='d'){ setDir('RIGHT'); setKeyActive('keyD',true);} else if(k==='s'){ setDir('DOWN'); setKeyActive('keyS',true);} });
+        document.addEventListener('keyup', (e)=>{ const k=(e.key||'').toLowerCase(); if(k==='a') setKeyActive('keyA',false); else if(k==='w') setKeyActive('keyW',false); else if(k==='d') setKeyActive('keyD',false); else if(k==='s') setKeyActive('keyS',false); });
+        function collision(head,array){ for(let i=0;i<array.length;i++) if(head.x===array[i].x && head.y===array[i].y) return true; return false; }
+        function reset(){ snake=[{x:9*box,y:10*box}]; dir=null; points=0; scoreEl.textContent='Puntos: 0'; food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box}; }
+        function draw(){
+          ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
+          for(let i=0;i<snake.length;i++){ ctx.fillStyle = i===0 ? 'lime' : 'white'; ctx.fillRect(snake[i].x,snake[i].y,box,box); }
+          ctx.fillStyle='red'; ctx.fillRect(food.x,food.y,box,box);
+          let snakeX=snake[0].x, snakeY=snake[0].y;
+          if(dir==='LEFT') snakeX-=box; if(dir==='UP') snakeY-=box; if(dir==='RIGHT') snakeX+=box; if(dir==='DOWN') snakeY+=box;
+          if(snakeX===food.x && snakeY===food.y){ points++; scoreEl.textContent='Puntos: '+points; food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box}; } else snake.pop();
+          const newHead={x:snakeX,y:snakeY};
+          if(snakeX<0||snakeY<0||snakeX>=canvas.width||snakeY>=canvas.height||collision(newHead,snake)){ reset(); return; }
           snake.unshift(newHead);
         }
-
-        // Hold-to-repeat helpers for mobile controls
-        function addHoldBehavior(button, onAction, interval=CONFIG.snakeHoldRepeat) {
-          let holdInterval = null;
-          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, interval); button.classList.add('active'); };
-          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } button.classList.remove('active'); };
-          button.addEventListener('touchstart', start, { passive:false });
-          button.addEventListener('mousedown', start);
-          button.addEventListener('touchend', stop);
-          button.addEventListener('mouseup', stop);
-          button.addEventListener('mouseleave', stop);
-          button.addEventListener('click', (e)=>{ e.preventDefault(); onAction(); });
-        }
-
-        const sUp = document.getElementById("snakeUp"), sLeft = document.getElementById("snakeLeft"), sDown = document.getElementById("snakeDown"), sRight = document.getElementById("snakeRight");
-        if (sUp) addHoldBehavior(sUp, ()=> { setDir("UP"); flashKey('keyW',80); });
-        if (sLeft) addHoldBehavior(sLeft, ()=> { setDir("LEFT"); flashKey('keyA',80); });
-        if (sDown) addHoldBehavior(sDown, ()=> { setDir("DOWN"); flashKey('keyS',80); });
-        if (sRight) addHoldBehavior(sRight, ()=> { setDir("RIGHT"); flashKey('keyD',80); });
-
-        setInterval(drawSnake, CONFIG.snakeStepInterval);
+        // Mobile hold-to-repeat
+        function addHold(button,action,interval=120){ let h=null; const start=(e)=>{ e.preventDefault(); action(); if(h) clearInterval(h); h=setInterval(action,interval); button.classList.add('active'); }; const stop=()=>{ if(h){ clearInterval(h); h=null;} button.classList.remove('active'); }; button.addEventListener('touchstart',start,{passive:false}); button.addEventListener('mousedown',start); button.addEventListener('touchend',stop); button.addEventListener('mouseup',stop); button.addEventListener('mouseleave',stop); button.addEventListener('click',(e)=>{ e.preventDefault(); action(); }); }
+        const sUp=document.getElementById('snakeUp'), sLeft=document.getElementById('snakeLeft'), sDown=document.getElementById('snakeDown'), sRight=document.getElementById('snakeRight');
+        if(sUp) addHold(sUp, ()=> { setDir('UP'); flashKey('keyW',80); });
+        if(sLeft) addHold(sLeft, ()=> { setDir('LEFT'); flashKey('keyA',80); });
+        if(sDown) addHold(sDown, ()=> { setDir('DOWN'); flashKey('keyS',80); });
+        if(sRight) addHold(sRight, ()=> { setDir('RIGHT'); flashKey('keyD',80); });
+        setInterval(draw, 100);
       })();
 
-      /* ============================================================
-         5) Space Invaders (Arrows + Z) with visual keys and sounds
-         ============================================================ */
+      /* ============================
+         Space Invaders (Arrows + Z)
+         ============================ */
       (function(){
-        const canvas2 = document.getElementById("spaceGame");
-        const ctx2 = canvas2.getContext("2d");
-        window.ship = { x: 180, y: 350, w: 40, h: 16 };
-        window.bullets = window.bullets || [];
-        let enemies = [];
-        let enemyDir = 1;
-        let enemySpeed = 0.5;
-        const spaceStatus = document.getElementById("spaceStatus");
-
-        function createEnemies(){
-          enemies = [];
-          for (let row=0; row<3; row++){
-            for (let col=0; col<5; col++){
-              enemies.push({ x: col*60+30, y: row*40+30, w:30, h:18, alive:true });
-            }
-          }
-        }
+        const canvas=document.getElementById('spaceGame'), ctx=canvas.getContext('2d');
+        window.ship={x:180,y:350,w:40,h:16}; window.bullets=window.bullets||[]; let enemies=[]; let enemyDir=1; let enemySpeed=0.5; const statusEl=document.getElementById('spaceStatus');
+        function createEnemies(){ enemies=[]; for(let r=0;r<3;r++) for(let c=0;c<5;c++) enemies.push({x:c*60+30,y:r*40+30,w:30,h:18,alive:true}); }
         createEnemies();
-
-        // Keyboard: arrows for move, Z for fire
-        document.addEventListener("keydown", (e) => {
-          const k = (e.key || '').toLowerCase();
-          if (k === 'arrowleft') { window.ship.x = Math.max(0, window.ship.x - CONFIG.shipKeyStep); setKeyActive('keyLeft', true); }
-          if (k === 'arrowright') { window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + CONFIG.shipKeyStep); setKeyActive('keyRight', true); }
-          if (k === 'z') { window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); setKeyActive('keyZ', true); }
-        });
-        document.addEventListener("keyup", (e) => {
-          const k = (e.key || '').toLowerCase();
-          if (k === 'arrowleft') setKeyActive('keyLeft', false);
-          if (k === 'arrowright') setKeyActive('keyRight', false);
-          if (k === 'z') setKeyActive('keyZ', false);
-        });
-
-        // Hold-to-repeat for mobile controls
-        function addHoldBehavior(button, onAction, interval=CONFIG.spaceHoldRepeat) {
-          let holdInterval = null;
-          const start = (e) => { e.preventDefault(); onAction(); if (holdInterval) clearInterval(holdInterval); holdInterval = setInterval(onAction, interval); button.classList.add('active'); };
-          const stop = (e) => { if (holdInterval) { clearInterval(holdInterval); holdInterval = null; } button.classList.remove('active'); };
-          button.addEventListener('touchstart', start, { passive:false });
-          button.addEventListener('mousedown', start);
-          button.addEventListener('touchend', stop);
-          button.addEventListener('mouseup', stop);
-          button.addEventListener('mouseleave', stop);
-          button.addEventListener('click', (e)=>{ e.preventDefault(); onAction(); });
-        }
-
-        const spLeft = document.getElementById("spaceLeft"), spRight = document.getElementById("spaceRight"), spFire = document.getElementById("spaceFire");
-        if (spLeft) addHoldBehavior(spLeft, ()=> { window.ship.x = Math.max(0, window.ship.x - CONFIG.shipStep); flashKey('keyLeft',80); });
-        if (spRight) addHoldBehavior(spRight, ()=> { window.ship.x = Math.min(canvas2.width - window.ship.w, window.ship.x + CONFIG.shipStep); flashKey('keyRight',80); });
-        if (spFire) addHoldBehavior(spFire, ()=> { window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); flashKey('keyZ',80); });
-
-        function updateEnemies(){
-          let minX = Infinity, maxX = -Infinity;
-          enemies.forEach(e => { if (!e.alive) return; minX = Math.min(minX, e.x); maxX = Math.max(maxX, e.x + e.w); });
-          if (minX === Infinity) return;
-          if (maxX >= canvas2.width - 10 && enemyDir === 1) { enemyDir = -1; enemies.forEach(e => e.y += 10); }
-          if (minX <= 10 && enemyDir === -1) { enemyDir = 1; enemies.forEach(e => e.y += 10); }
-          enemies.forEach(e => { if (e.alive) e.x += enemyDir * enemySpeed; });
-        }
-
-        function drawSpace(){
-          ctx2.clearRect(0,0,canvas2.width,canvas2.height);
-          ctx2.fillStyle = "lime"; ctx2.fillRect(window.ship.x, window.ship.y, window.ship.w, window.ship.h);
-          ctx2.fillStyle = "yellow"; window.bullets.forEach(b => { ctx2.fillRect(b.x,b.y,b.w,b.h); b.y -= 6; });
-          ctx2.fillStyle = "red"; enemies.forEach(e => { if (e.alive) ctx2.fillRect(e.x,e.y,e.w,e.h); });
-
-          window.bullets = window.bullets.filter(b => {
-            if (b.y < 0) return false;
-            for (let i=0;i<enemies.length;i++){
-              const e = enemies[i];
-              if (!e.alive) continue;
-              if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y){
-                e.alive = false;
-                beep(520,0.06,'square',0.06);
-                return false;
-              }
-            }
-            return true;
-          });
-
+        document.addEventListener('keydown',(e)=>{ const k=(e.key||'').toLowerCase(); if(k==='arrowleft'){ window.ship.x=Math.max(0,window.ship.x-20); setKeyActive('keyLeft',true);} if(k==='arrowright'){ window.ship.x=Math.min(canvas.width-window.ship.w,window.ship.x+20); setKeyActive('keyRight',true);} if(k==='z'){ window.bullets.push({x:window.ship.x+window.ship.w/2-2,y:window.ship.y,w:4,h:10}); setKeyActive('keyZ',true);} });
+        document.addEventListener('keyup',(e)=>{ const k=(e.key||'').toLowerCase(); if(k==='arrowleft') setKeyActive('keyLeft',false); if(k==='arrowright') setKeyActive('keyRight',false); if(k==='z') setKeyActive('keyZ',false); });
+        function updateEnemies(){ let minX=Infinity,maxX=-Infinity; enemies.forEach(e=>{ if(!e.alive) return; minX=Math.min(minX,e.x); maxX=Math.max(maxX,e.x+e.w); }); if(minX===Infinity) return; if(maxX>=canvas.width-10 && enemyDir===1){ enemyDir=-1; enemies.forEach(e=>e.y+=10);} if(minX<=10 && enemyDir===-1){ enemyDir=1; enemies.forEach(e=>e.y+=10);} enemies.forEach(e=>{ if(e.alive) e.x+=enemyDir*enemySpeed; }); }
+        function draw(){
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          ctx.fillStyle='lime'; ctx.fillRect(window.ship.x,window.ship.y,window.ship.w,window.ship.h);
+          ctx.fillStyle='yellow'; window.bullets.forEach(b=>{ ctx.fillRect(b.x,b.y,b.w,b.h); b.y-=6; });
+          ctx.fillStyle='red'; enemies.forEach(e=>{ if(e.alive) ctx.fillRect(e.x,e.y,e.w,e.h); });
+          window.bullets = window.bullets.filter(b=>{ if(b.y<0) return false; for(let i=0;i<enemies.length;i++){ const e=enemies[i]; if(!e.alive) continue; if(b.x<e.x+e.w && b.x+b.w>e.x && b.y<e.y+e.h && b.y+b.h>e.y){ e.alive=false; return false; } } return true; });
           updateEnemies();
-
-          const anyAlive = enemies.some(e => e.alive);
-          if (!anyAlive){
-            spaceStatus.textContent = "¡Ganaste! Reiniciando...";
-            setTimeout(()=>{ createEnemies(); window.bullets = []; spaceStatus.textContent = ""; }, 1500);
-          } else {
-            const reached = enemies.some(e => e.alive && e.y + e.h >= window.ship.y);
-            if (reached){
-              spaceStatus.textContent = "Has sido alcanzado. Reiniciando...";
-              setTimeout(()=>{ createEnemies(); window.ship.x = 180; window.bullets = []; spaceStatus.textContent = ""; }, 1500);
-            }
+          const anyAlive = enemies.some(e=>e.alive);
+          if(!anyAlive){ statusEl.textContent='¡Ganaste! Reiniciando...'; setTimeout(()=>{ createEnemies(); window.bullets=[]; statusEl.textContent=''; },1500); } else {
+            const reached = enemies.some(e=>e.alive && e.y+e.h>=window.ship.y);
+            if(reached){ statusEl.textContent='Has sido alcanzado. Reiniciando...'; setTimeout(()=>{ createEnemies(); window.ship.x=180; window.bullets=[]; statusEl.textContent=''; },1500); }
           }
         }
-        setInterval(drawSpace, 40);
+        // Mobile hold-to-repeat
+        function addHold(button,action,interval=80){ let h=null; const start=(e)=>{ e.preventDefault(); action(); if(h) clearInterval(h); h=setInterval(action,interval); button.classList.add('active'); }; const stop=()=>{ if(h){ clearInterval(h); h=null;} button.classList.remove('active'); }; button.addEventListener('touchstart',start,{passive:false}); button.addEventListener('mousedown',start); button.addEventListener('touchend',stop); button.addEventListener('mouseup',stop); button.addEventListener('mouseleave',stop); button.addEventListener('click',(e)=>{ e.preventDefault(); action(); }); }
+        const spLeft=document.getElementById('spaceLeft'), spRight=document.getElementById('spaceRight'), spFire=document.getElementById('spaceFire');
+        if(spLeft) addHold(spLeft, ()=> { window.ship.x=Math.max(0,window.ship.x-6); flashKey('keyLeft',80); });
+        if(spRight) addHold(spRight, ()=> { window.ship.x=Math.min(canvas.width-window.ship.w,window.ship.x+6); flashKey('keyRight',80); });
+        if(spFire) addHold(spFire, ()=> { window.bullets.push({x:window.ship.x+window.ship.w/2-2,y:window.ship.y,w:4,h:10}); flashKey('keyZ',80); });
+        setInterval(draw,40);
       })();
 
-      /* ============================================================
-         6) Emulador: carga condicional, fullscreen y teclado móvil mapping
-         ============================================================ */
+      /* ============================
+         Infinite Mac embed (conditional load)
+         ============================ */
       (function(){
         const embedUrl = "https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650";
-        const loadBtn = document.getElementById("loadEmulatorBtn");
-        const openBtn = document.getElementById("openNewTabBtn");
-        const fsBtn = document.getElementById("emuladorFullscreen");
-        const openKbdBtn = document.getElementById("openKeyboard");
-        const container = document.getElementById("embedContainer");
-        const placeholder = document.getElementById("embedPlaceholder");
+        const loadBtn = document.getElementById('loadInfiniteBtn');
+        const openBtn = document.querySelector('#emulador a');
+        const fsBtn = document.getElementById('emuladorFullscreen');
+        const container = document.getElementById('embedContainer');
+        const placeholder = document.getElementById('embedPlaceholder');
         let iframeEl = null;
-
-        function isMobile() {
-          return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-
-        openBtn.addEventListener("click", () => {
-          window.open(embedUrl, "_blank", "noopener");
-        });
-
-        loadBtn.addEventListener("click", () => {
-          if (iframeEl) return;
-          iframeEl = document.createElement("iframe");
+        function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
+        loadBtn.addEventListener('click', ()=> {
+          if(iframeEl) return;
+          iframeEl = document.createElement('iframe');
           iframeEl.src = embedUrl;
-          iframeEl.className = "embed";
-          iframeEl.style.width = "100%";
-          iframeEl.style.height = "600px";
-          iframeEl.style.border = "1px solid #222";
-          iframeEl.style.borderRadius = "8px";
-          iframeEl.loading = "lazy";
+          iframeEl.className = 'embed';
+          iframeEl.style.width='100%'; iframeEl.style.height='600px'; iframeEl.loading='lazy';
           iframeEl.allow = "clipboard-write; fullscreen; autoplay";
           iframeEl.title = "Infinite Mac System 7.5.3";
-          container.removeChild(placeholder);
-          container.appendChild(iframeEl);
-
-          if (isMobile()) {
-            iframeEl.style.height = "420px";
-            setTimeout(() => {
-              try {
-                const cw = iframeEl.contentWindow;
-                if (!cw) {
-                  alert("El emulador no pudo cargarse embebido en tu dispositivo. Usa 'Abrir en nueva pestaña' para mejor compatibilidad.");
-                }
-              } catch (err) {
-                alert("El emulador no pudo cargarse embebido en tu dispositivo. Usa 'Abrir en nueva pestaña' para mejor compatibilidad.");
-              }
-            }, 6000);
-          }
+          container.removeChild(placeholder); container.appendChild(iframeEl);
+          if(isMobile()) iframeEl.style.height='420px';
         });
-
-        fsBtn.addEventListener("click", () => {
-          if (!iframeEl) {
-            alert("Primero carga el emulador aquí con 'Cargar emulador aquí'.");
-            return;
-          }
-          try {
-            if (iframeEl.requestFullscreen) iframeEl.requestFullscreen();
-            else if (iframeEl.webkitRequestFullscreen) iframeEl.webkitRequestFullscreen();
-            else window.open(embedUrl, "_blank");
-          } catch (err) {
-            window.open(embedUrl, "_blank");
-          }
+        fsBtn.addEventListener('click', ()=> {
+          const iframe = container.querySelector('iframe');
+          if(!iframe){ alert('Primero carga el emulador aquí con "Cargar emulador aquí".'); return; }
+          try{ if(iframe.requestFullscreen) iframe.requestFullscreen(); else window.open(embedUrl,'_blank'); } catch(e){ window.open(embedUrl,'_blank'); }
         });
-
-        // Mobile keyboard helper: focus hidden input to open keyboard and capture keys
+        // keyboard helper focus
         const kbdFocus = document.getElementById('kbdFocus');
-        if (openKbdBtn) {
-          openKbdBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            kbdFocus.setAttribute('inputmode', 'text');
-            kbdFocus.focus({preventScroll:true});
-            setTimeout(()=> kbdFocus.focus({preventScroll:true}), 50);
-          });
+        const openKbdBtn = document.getElementById('openKeyboard');
+        if(openKbdBtn) openKbdBtn.addEventListener('click', (e)=>{ e.preventDefault(); kbdFocus.setAttribute('inputmode','text'); kbdFocus.focus({preventScroll:true}); setTimeout(()=>kbdFocus.focus({preventScroll:true}),50); });
+      })();
+
+      /* ============================
+         SM64: ROM upload, detection and emulator placeholder
+         ============================ */
+      (function(){
+        const romInput = document.getElementById('romInput');
+        const loadBtn = document.getElementById('loadSm64Btn');
+        const fileNameEl = document.getElementById('fileName');
+        const fileSizeEl = document.getElementById('fileSize');
+        const romFormatEl = document.getElementById('romFormat');
+        const canvas = document.getElementById('n64Canvas');
+        const openNewTab = document.getElementById('openSm64NewTab');
+        const fullscreenBtn = document.getElementById('n64Fullscreen');
+        const pauseBtn = document.getElementById('n64Pause');
+        let romBuffer = null, romFile = null, emulatorInstance = null, paused=false;
+
+        function detectRomFormat(uint8){
+          if(!uint8 || uint8.length<4) return 'desconocido';
+          const b0=uint8[0], b1=uint8[1], b2=uint8[2], b3=uint8[3];
+          if(b0===0x80 && b1===0x37 && b2===0x12 && b3===0x40) return '.z64 (big-endian)';
+          if(b0===0x40 && b1===0x12 && b2===0x37 && b3===0x80) return '.n64 (little-endian)';
+          if(b0===0x37 && b1===0x80 && b2===0x40 && b3===0x12) return '.v64 (byte-swapped)';
+          return 'posible ROM N64 (encabezado no estándar)';
         }
 
-        // Map mobile keyboard input to game controls (WASD, arrows, Z)
-        kbdFocus.addEventListener('keydown', (e) => {
-          const k = (e.key || '').toLowerCase();
-          // Snake WASD
-          if (k === 'a') { window.setDir && window.setDir('LEFT'); flashKey('keyA',80); }
-          else if (k === 'w') { window.setDir && window.setDir('UP'); flashKey('keyW',80); }
-          else if (k === 'd') { window.setDir && window.setDir('RIGHT'); flashKey('keyD',80); }
-          else if (k === 's') { window.setDir && window.setDir('DOWN'); flashKey('keyS',80); }
-          // Space Invaders arrows + z
-          else if (k === 'arrowleft') { window.ship && (window.ship.x = Math.max(0, window.ship.x - CONFIG.shipKeyStep)); flashKey('keyLeft',80); }
-          else if (k === 'arrowright') { window.ship && (window.ship.x = Math.min(document.getElementById('spaceGame').width - window.ship.w, window.ship.x + CONFIG.shipKeyStep)); flashKey('keyRight',80); }
-          else if (k === 'z') { if (window.ship) { window.bullets = window.bullets || []; window.bullets.push({ x: window.ship.x + window.ship.w/2 - 2, y: window.ship.y, w:4, h:10 }); beep(1200,0.06,'sawtooth',0.08); flashKey('keyZ',80); } }
-          e.preventDefault();
+        romInput.addEventListener('change', async (e)=> {
+          const f = e.target.files[0];
+          if(!f) return;
+          romFile = f;
+          fileNameEl.textContent = f.name;
+          fileSizeEl.textContent = (f.size/1024/1024).toFixed(2)+' MB';
+          try{
+            const ab = await f.arrayBuffer();
+            const view = new Uint8Array(ab.slice(0,16));
+            const fmt = detectRomFormat(view);
+            romFormatEl.textContent = fmt;
+            romBuffer = ab;
+            loadBtn.disabled = false;
+            log('ROM leída en memoria. Formato detectado:', fmt);
+          }catch(err){
+            log('Error leyendo ROM:', err);
+            romBuffer = null; loadBtn.disabled = true;
+          }
         });
 
-        document.addEventListener('touchstart', (e) => {
-          const target = e.target;
-          if (target !== kbdFocus && target !== openKbdBtn) {
-            try { kbdFocus.blur(); } catch (err) {}
+        openNewTab.addEventListener('click', ()=> {
+          // abre la misma página en nueva pestaña para que el usuario pueda usar el emulador allí
+          window.open(window.location.href, '_blank', 'noopener');
+        });
+
+        fullscreenBtn.addEventListener('click', ()=> {
+          if(canvas.requestFullscreen) canvas.requestFullscreen(); else if(canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen(); else log('Fullscreen no soportado.');
+        });
+
+        pauseBtn.addEventListener('click', ()=> {
+          paused = !paused; pauseBtn.textContent = paused ? 'Reanudar' : 'Pausar';
+          if(emulatorInstance && typeof emulatorInstance.setPaused === 'function') emulatorInstance.setPaused(paused);
+          else log('Pausa enviada (si el emulador lo soporta).');
+        });
+
+        loadBtn.addEventListener('click', async ()=> {
+          if(!romBuffer){ log('No hay ROM cargada.'); return; }
+          log('Iniciando emulador con ROM en memoria...');
+          try{
+            // ======= REEMPLAZA ESTA SECCIÓN con la API real del port que uses =======
+            // Si tu port expone startEmulator(arrayBuffer, canvas, onLog) úsalo aquí.
+            // Ejemplo:
+            //   emulatorInstance = await startEmulator(romBuffer, canvas, (m)=>log('[emu] '+m));
+            //   emulatorInstance.start();
+            //
+            // Si no tienes un port integrado aún, mostramos un mensaje simulado:
+            if(typeof startEmulator === 'function'){
+              emulatorInstance = await startEmulator(romBuffer, canvas, (m)=>log('[emu] '+m));
+              log('Emulador iniciado (API startEmulator).');
+            } else {
+              log('No se detectó un emulador integrado. Esto es una plantilla. Añade el script/WASM del port y reemplaza la llamada aquí.');
+              const ctx = canvas.getContext('2d');
+              ctx.fillStyle = '#003'; ctx.fillRect(0,0,canvas.width,canvas.height);
+              ctx.fillStyle = '#fff'; ctx.font='20px monospace';
+              ctx.fillText('Emulador no integrado', 20,40);
+              ctx.fillText('ROM: ' + (romFile ? romFile.name : '—'), 20,80);
+            }
+          }catch(err){
+            log('Error al iniciar emulador:', err);
           }
-        }, { passive:true });
+        });
+
+        // Mostrar errores globales en el log
+        window.addEventListener('error', (e)=> log('Error global:', e.message || e));
+        window.addEventListener('unhandledrejection', (e)=> log('Unhandled rejection:', e.reason || e));
       })();
 
       // small passive touchstart to improve mobile UX
@@ -675,23 +477,3 @@
     </script>
   </body>
 </html>
-<section id="sm64" class="card">
-  <h2>🎮 Super Mario 64 en tu navegador</h2>
-  <p>Sube tu copia legítima de Super Mario 64 (ROM .z64/.n64/.v64) para jugar:</p>
-  <input type="file" id="romUpload" accept=".z64,.n64,.v64" />
-  <canvas id="n64Canvas" width="640" height="480"></canvas>
-  <p class="note">Tu ROM nunca se sube al servidor, se ejecuta localmente en tu navegador.</p>
-</section>
-
-<script src="emulador-n64.js"></script>
-<script>
-  const input = document.getElementById('romUpload');
-  input.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const arrayBuffer = await file.arrayBuffer();
-      // Aquí llamas al emulador JS para cargar la ROM
-      startN64Emulator(arrayBuffer, document.getElementById('n64Canvas'));
-    }
-  });
-</script>
