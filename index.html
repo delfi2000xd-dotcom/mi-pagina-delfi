@@ -6,7 +6,13 @@
     <title>Mi página Delfi</title>
     <link rel="stylesheet" href="style.css">
     <style>
-      /* Logo */
+      body {
+        background: #0b0b0f;
+        color: #e9f3ff;
+        font-family: system-ui, Arial, sans-serif;
+        line-height: 1.5;
+        margin: 0;
+      }
       .logo-canal {
         width: 200px;
         border-radius: 50%;
@@ -18,12 +24,33 @@
         display:flex;
         gap:1rem;
         justify-content:center;
-        background:#222;
-        padding:10px;
+        background:#1a1a22;
+        padding:12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
       }
-      nav a { color:#0ff; text-decoration:none; }
-
-      /* Minijuego Atrapa el cuadrado */
+      nav a { color:#0ff; text-decoration:none; font-weight:600; }
+      nav a:hover { color:#8ef; }
+      main section { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+      .card {
+        background:#121218;
+        border:1px solid #1f2a44;
+        border-radius:12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        margin: 16px auto;
+      }
+      .btn {
+        display:inline-block;
+        background:#0af;
+        color:#001;
+        padding:10px 16px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:700;
+        margin-top:10px;
+      }
+      .btn:hover { background:#09c; }
       #game-area {
         width: 400px;
         height: 400px;
@@ -41,8 +68,28 @@
       }
       #score {
         text-align: center;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         color: #fff;
+      }
+      canvas {
+        display:block;
+        margin: 16px auto;
+        border: 2px solid #234;
+        border-radius: 8px;
+      }
+      .infografia {
+        background: linear-gradient(135deg, #0af, #09c);
+        color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      }
+      footer {
+        text-align:center;
+        margin: 24px 0 40px;
+        color:#a9b7c6;
       }
     </style>
   </head>
@@ -51,6 +98,7 @@
       <nav>
         <a href="#inicio">Inicio</a>
         <a href="#canal">Canal</a>
+        <a href="#infografia">Infografía</a>
         <a href="#juego">Atrapa</a>
         <a href="#snake">Snake</a>
         <a href="#space">Space Invaders</a>
@@ -73,7 +121,15 @@
         </a>
       </section>
 
-      <!-- Minijuego Atrapa el cuadrado -->
+      <!-- Infografía -->
+      <section id="infografia" class="card infografia">
+        <h2>📌 Mini Infografía</h2>
+        <p>Hola soy Delfi, me gusta la tecnología nueva y antigua.<br>
+        Estoy trabajando en un juego de Roblox y me gustaría que me siguieras.<br>
+        También subo videos. ¡Gracias por leer esto! 🙂</p>
+      </section>
+
+      <!-- Atrapa el cuadrado -->
       <section id="juego" class="card">
         <h2>🎮 Minijuego: Atrapa el cuadrado</h2>
         <div id="score">Puntos: 0</div>
@@ -85,23 +141,23 @@
       <!-- Snake -->
       <section id="snake" class="card">
         <h2>🐍 Snake</h2>
-        <canvas id="snakeGame" width="400" height="400" style="background:#111; display:block; margin:auto;"></canvas>
+        <canvas id="snakeGame" width="400" height="400" style="background:#111;"></canvas>
       </section>
 
       <!-- Space Invaders -->
       <section id="space" class="card">
         <h2>👾 Space Invaders</h2>
-        <canvas id="spaceGame" width="400" height="400" style="background:#000; display:block; margin:auto;"></canvas>
+        <canvas id="spaceGame" width="400" height="400" style="background:#000;"></canvas>
       </section>
 
       <section id="contacto" class="card" style="text-align:center;">
         <h2>📲 Contacto</h2>
         <p><strong>Roblox:</strong> MVTOEP</p>
-        <p><strong>Discord:</strong> dealfi</p>
+        <p><strong>Discord:</strong> dealfi_30409</p>
       </section>
     </main>
 
-    <footer style="text-align:center; margin-top:20px;">
+    <footer>
       © 2025 Delfi. Todos los derechos reservados.
     </footer>
 
@@ -160,42 +216,4 @@
           snake.pop();
         }
         let newHead = {x: snakeX, y: snakeY};
-        snake.unshift(newHead);
-      }
-      setInterval(drawSnake, 100);
-
-      /* Space Invaders */
-      const canvas2 = document.getElementById("spaceGame");
-      const ctx2 = canvas2.getContext("2d");
-      let ship = {x:180, y:350, w:40, h:20};
-      let bullets = [];
-      let enemies = [];
-      for(let i=0;i<5;i++){ enemies.push({x: i*60+30, y:30, w:30, h:20}); }
-      document.addEventListener("keydown", e=>{
-        if(e.key==="ArrowLeft") ship.x -= 20;
-        if(e.key==="ArrowRight") ship.x += 20;
-        if(e.key===" ") bullets.push({x: ship.x+ship.w/2-2, y: ship.y});
-      });
-      function drawSpace(){
-        ctx2.clearRect(0,0,400,400);
-        ctx2.fillStyle="lime";
-        ctx2.fillRect(ship.x, ship.y, ship.w, ship.h);
-        ctx2.fillStyle="yellow";
-        for(let b of bullets){ ctx2.fillRect(b.x,b.y,4,10); b.y -= 5; }
-        ctx2.fillStyle="red";
-        for(let e of enemies){ ctx2.fillRect(e.x,e.y,e.w,e.h); }
-        bullets = bullets.filter(b=>{
-          for(let i=0;i<enemies.length;i++){
-            let e=enemies[i];
-            if(b.x<e.x+e.w && b.x+4>e.x && b.y<e.y+e.h && b.y+10>e.y){
-              enemies.splice(i,1);
-              return false;
-            }
-          }
-          return b.y>0;
-        });
-      }
-      setInterval(drawSpace,50);
-    </script>
-  </body>
-</html>
+        snake
