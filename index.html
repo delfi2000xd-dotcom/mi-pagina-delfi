@@ -3,51 +3,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Delfi - Juegos y Emuladores (SM64 integrado)</title>
+    <title>Delfi — Juegos, Emuladores y SM64 (v2.3)</title>
+    <meta name="description" content="Página de Delfi: juegos, emuladores, SM64 local, estética Vocaloid y más." />
     <style>
+      /* =========================
+         Paleta Vocaloid + estilo general
+         ========================= */
       :root{
-        --bg:#0b0b0f; --card:#121218; --accent:#0af; --muted:#9fb; --text:#e9f3ff;
-        --active:#ffd54f; --inactive:#2b2f36;
+        --bg:#071026;         /* fondo oscuro con matiz violeta */
+        --card:#0f1220;       /* tarjetas */
+        --accent:#6be0ff;     /* cyan brillante (Vocaloid) */
+        --accent-2:#ff7bff;   /* rosa suave */
+        --muted:#9fb8d6;
+        --text:#eaf6ff;
+        --glass: rgba(255,255,255,0.03);
+        --glass-2: rgba(107,224,255,0.06);
       }
-      html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-      header{position:sticky;top:0;background:#111;border-bottom:1px solid rgba(255,255,255,0.03);z-index:40}
-      nav{display:flex;gap:10px;justify-content:center;padding:12px}
-      nav a{color:var(--accent);text-decoration:none;font-weight:600}
-      main{max-width:1100px;margin:18px auto;padding:12px}
-      .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.03)}
-      h1,h2{margin:8px 0}
+      html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#020217);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+      header{position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);z-index:60}
+      nav{display:flex;gap:12px;justify-content:center;padding:12px;align-items:center}
+      nav a{color:var(--accent);text-decoration:none;font-weight:700;padding:6px 10px;border-radius:8px}
+      nav a:hover{color:var(--accent-2);transform:translateY(-1px)}
+      main{max-width:1100px;margin:18px auto;padding:14px}
+      .card{background:linear-gradient(180deg,var(--card),#0b0d16);border-radius:14px;padding:18px;margin-bottom:18px;border:1px solid var(--glass);box-shadow:0 8px 30px rgba(3,6,20,0.6)}
+      h1,h2,h3{margin:6px 0}
       .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:var(--accent);color:#001;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700;border:none;cursor:pointer}
-      .btn.alt{background:#09c;color:#001}
+      .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#001;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(107,224,255,0.06)}
+      .btn.alt{background:transparent;border:1px solid var(--glass);color:var(--muted)}
       .note{color:var(--muted);font-size:0.95rem}
       .small{font-size:0.9rem;color:var(--muted)}
-      /* Games */
-      #game-area{width:400px;height:400px;border:2px solid #00f;margin:16px auto;position:relative;background:#111}
-      #square{width:40px;height:40px;background:#0f0;position:absolute;cursor:pointer;border-radius:6px}
-      #score{ text-align:center; font-size:1.1rem; margin-bottom:8px }
-      canvas{display:block;margin:12px auto;border-radius:8px;border:2px solid #234;background:#000}
+      footer{padding:18px;text-align:center;color:#9fb;margin-top:18px}
+      .version{position:fixed;bottom:12px;right:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#001;padding:8px 10px;border-radius:10px;font-weight:800;z-index:80;box-shadow:0 8px 30px rgba(107,224,255,0.08)}
+      /* Logo bonito */
+      .logo{width:120px;height:120px;border-radius:18px;display:block;margin:0 auto 12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 12px 40px rgba(107,224,255,0.08);border:2px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-weight:900;color:#001;font-size:28px}
+      /* Juegos */
+      #game-area{width:400px;height:400px;border-radius:12px;border:2px dashed rgba(107,224,255,0.08);margin:16px auto;position:relative;background:linear-gradient(180deg,#05060a,#071026)}
+      #square{width:44px;height:44px;background:linear-gradient(180deg,#7fffcc,#00d1a6);position:absolute;cursor:pointer;border-radius:8px;box-shadow:0 8px 20px rgba(0,200,150,0.08)}
+      #score{ text-align:center; font-size:1.05rem; margin-bottom:8px;color:var(--muted) }
+      canvas{display:block;margin:12px auto;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:#000}
       /* Key indicators */
       .key-indicators{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
       .keys-block{display:flex;gap:6px;align-items:center}
-      .key{width:44px;height:44px;border-radius:8px;background:var(--inactive);display:flex;align-items:center;justify-content:center;color:#000;font-weight:800}
-      .key.active{background:var(--active);color:#000;box-shadow:0 6px 18px rgba(255,213,79,0.12)}
-      .label{font-size:0.85rem;color:var(--muted);text-align:center;margin-top:6px}
-      /* Emulador Infinite Mac */
+      .key{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;color:#001;font-weight:800}
+      .key.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#001;box-shadow:0 8px 24px rgba(107,224,255,0.08)}
+      /* Emuladores y embeds */
       .embed-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
-      .embed{width:100%;max-width:900px;height:600px;border:1px solid #222;border-radius:8px;display:block;margin:0 auto;background:#000}
+      .embed{width:100%;max-width:920px;height:560px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:#000;overflow:hidden}
       .embed-controls{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-      .kbd-btn{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;font-weight:700}
-      /* SM64 canvas & log */
-      #n64Canvas{width:100%;max-width:900px;height:480px;background:#000;border-radius:8px;border:1px solid #222;display:block;margin:12px auto}
-      #log{font-family:monospace;font-size:0.85rem;color:#cfe;max-height:160px;overflow:auto;padding:8px;background:#071018;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-      label.file-label{display:inline-block;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer}
+      .kbd-btn{background:rgba(255,255,255,0.03);color:var(--muted);border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:8px;font-weight:700}
+      /* SM64 area */
+      #n64Canvas{width:100%;max-width:900px;height:480px;background:#000;border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:block;margin:12px auto}
+      #log{font-family:monospace;font-size:0.85rem;color:#cfe;max-height:160px;overflow:auto;padding:8px;background:linear-gradient(180deg,#021226,#04102a);border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+      label.file-label{display:inline-block;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
       input[type=file]{display:none}
-      @media (max-width:720px){ .embed{height:420px} #game-area, canvas, #n64Canvas{width:320px;height:320px} .logo-canal{width:140px;height:140px} }
-      /* Touch-action: only on interactive elements */
-      #game-area, canvas, .controls, .embed, #embedContainer, #n64Canvas { touch-action: none; }
-      main, header, footer, .card { touch-action: auto; }
-      /* Hidden input to trigger mobile keyboard */
-      #kbdFocus{position:fixed;left:-9999px;top:auto;width:1px;height:1px;opacity:0}
+      /* Responsive */
+      @media (max-width:820px){ #game-area, canvas, #n64Canvas{width:320px;height:320px} .logo{width:110px;height:110px} }
     </style>
   </head>
   <body>
@@ -63,26 +73,127 @@
     </header>
 
     <main id="inicio">
-      <section class="card center">
-        <img src="imagenes/canal.png" alt="Logo" style="width:140px;border-radius:50%;display:block;margin:0 auto 12px">
-        <h1 class="center">Hola, soy Delfi</h1>
-        <p class="note center">Bienvenido a mi página con juegos y emuladores. Aquí puedes jugar, embeber Infinite Mac y cargar tu copia legítima de SM64 para ejecutarla localmente.</p>
+      <!-- Hero / Logo -->
+      <section class="card center" id="hero">
+        <div class="logo" aria-hidden="true">Delfi</div>
+        <h1 style="text-align:center">Hola, soy Delfi</h1>
+        <p class="note" style="text-align:center">Bienvenido a mi página: estética Vocaloid, juegos, emuladores y más. Todo actualizado y listo.</p>
       </section>
 
-      <!-- (Se mantienen todas las secciones y juegos exactamente como en v2.2) -->
-      <!-- ... (omitido aquí por brevedad en el ejemplo) ... -->
-      <!-- En tu archivo real, conserva todo el HTML de v2.2 tal cual; abajo solo muestro la sección SM64 integrada. -->
+      <!-- Canal -->
+      <section id="canal" class="card">
+        <h2>🎥 Mi canal de YouTube</h2>
+        <p class="small">Visita mi canal para ver mis videos y suscribirte.</p>
+        <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank" rel="noopener">Ir a mi canal</a>
+      </section>
 
-      <!-- SM64 integrado: sección completa -->
+      <!-- Infografía -->
+      <section id="infografia" class="card">
+        <h2>📌 Mini Infografía</h2>
+        <p class="note">Hola soy Delfi — me encanta la tecnología nueva y la retro. Estoy creando un juego en Roblox y subo videos. Gracias por tu apoyo.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <strong>Intereses</strong>
+            <ul class="small">
+              <li>Tecnología retro y moderna</li>
+              <li>Desarrollo en Roblox</li>
+              <li>Videos y streaming</li>
+            </ul>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <strong>Redes</strong>
+            <p class="small">Roblox: <strong>MVTOEP</strong><br>Discord: <strong>dealfi_30409</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Juegos -->
+      <section id="juegos" class="card">
+        <h2>🎮 Juegos</h2>
+
+        <!-- Atrapa -->
+        <div style="margin-bottom:18px">
+          <h3>Atrapa el cuadrado</h3>
+          <div id="score">Puntos: 0</div>
+          <div id="game-area" aria-label="Área de juego Atrapa el cuadrado">
+            <div id="square" role="button" aria-label="Cuadrado objetivo"></div>
+          </div>
+          <p class="small">Toca el cuadrado para sumar puntos.</p>
+        </div>
+
+        <!-- Snake -->
+        <div style="margin-bottom:18px">
+          <h3>🐍 Snake (WASD)</h3>
+          <canvas id="snakeGame" width="400" height="400" aria-label="Canvas Snake"></canvas>
+          <p class="small" id="snakeScore">Puntos: 0</p>
+          <div class="row" id="snakeControls" style="justify-content:center">
+            <button class="btn alt" id="snakeUp">W</button>
+            <button class="btn alt" id="snakeLeft">A</button>
+            <button class="btn alt" id="snakeDown">S</button>
+            <button class="btn alt" id="snakeRight">D</button>
+          </div>
+          <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+            <div class="keys-block">
+              <div class="key" id="keyW">W</div>
+              <div class="key" id="keyA">A</div>
+              <div class="key" id="keyS">S</div>
+              <div class="key" id="keyD">D</div>
+            </div>
+            <div class="label">Snake: WASD</div>
+          </div>
+        </div>
+
+        <!-- Space -->
+        <div>
+          <h3>👾 Space Invaders (Flechas + Z)</h3>
+          <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
+          <p class="small" id="spaceStatus"></p>
+          <div class="row" id="spaceControls" style="justify-content:center">
+            <button class="btn alt" id="spaceLeft">←</button>
+            <button class="btn alt" id="spaceFire">Z</button>
+            <button class="btn alt" id="spaceRight">→</button>
+          </div>
+          <div class="key-indicators" aria-hidden="true" style="margin-top:12px;">
+            <div class="keys-block">
+              <div class="key" id="keyLeft">←</div>
+              <div class="key" id="keyRight">→</div>
+              <div style="width:12px"></div>
+              <div class="key" id="keyZ">Z</div>
+            </div>
+            <div class="label">Space: Flechas + Z</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Infinite Mac -->
+      <section id="emulador" class="card">
+        <h2>🖥️ Emulador Infinite Mac — System 7.5.3</h2>
+        <div class="embed-wrap">
+          <div class="embed-controls">
+            <button class="btn" id="loadInfiniteBtn">Cargar emulador aquí</button>
+            <a class="btn alt" href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">Abrir en nueva pestaña</a>
+            <button class="kbd-btn" id="emuladorFullscreen">Pantalla completa</button>
+            <button class="kbd-btn" id="openKeyboard">Abrir teclado (móvil)</button>
+          </div>
+
+          <div id="embedContainer" style="width:100%;max-width:920px;min-height:120px;display:flex;align-items:center;justify-content:center;margin-top:12px;">
+            <div id="embedPlaceholder" style="color:var(--muted);text-align:center;padding:18px;">
+              Pulsa "Cargar emulador aquí" para iniciar el emulador en esta página. Si no funciona en tu móvil, usa "Abrir en nueva pestaña".
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SM64 integrado -->
       <section id="sm64" class="card">
-        <h2>🎮 Super Mario 64 (integrado)</h2>
+        <h2>🎮 Super Mario 64 (tu ROM local)</h2>
         <p class="note">Sube tu copia legítima (.z64/.n64/.v64). La ROM se ejecuta localmente en tu navegador y no se sube a ningún servidor.</p>
 
         <div class="row" style="align-items:center">
           <label class="file-label" for="romInput">Seleccionar ROM</label>
           <input id="romInput" type="file" accept=".z64,.n64,.v64" />
           <button id="loadSm64Btn" class="btn" disabled>Cargar ROM en emulador</button>
-          <button id="openSm64NewTab" class="btn alt">Abrir en nueva pestaña</button>
+          <button id="openSm64NewTab" class="btn alt">Abrir port SM64 en nueva pestaña</button>
         </div>
 
         <div style="margin-top:10px">
@@ -92,16 +203,15 @@
           <strong>Formato detectado:</strong> <span id="romFormat">—</span>
         </div>
 
-        <!-- Aquí intentamos integrar el port SM64 embebido -->
         <div style="margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:8px">
-          <div id="sm64EmbedControls" style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+          <div class="embed-controls">
             <button id="loadSm64Embed" class="btn">Cargar port SM64 embebido</button>
             <button id="sm64Fullscreen" class="btn">Pantalla completa</button>
             <button id="sm64OpenKeyboard" class="kbd-btn">Abrir teclado (móvil)</button>
           </div>
 
-          <div id="sm64EmbedContainer" style="width:100%;max-width:900px;min-height:120px;display:flex;align-items:center;justify-content:center;">
-            <div id="sm64EmbedPlaceholder" style="color:#9fb;text-align:center;padding:18px;">
+          <div id="sm64EmbedContainer" style="width:100%;max-width:920px;min-height:120px;display:flex;align-items:center;justify-content:center;">
+            <div id="sm64EmbedPlaceholder" style="color:var(--muted);text-align:center;padding:18px;">
               Pulsa "Cargar port SM64 embebido" para insertar el port aquí. Si no tienes el port en tu servidor, usa "Abrir en nueva pestaña" y sube la ROM dentro del port.
             </div>
           </div>
@@ -119,226 +229,275 @@
         </div>
       </section>
 
+      <!-- Contacto -->
       <section id="contacto" class="card center">
         <h2>📲 Contacto</h2>
-        <p><strong>Roblox:</strong> MVTOEP</p>
-        <p><strong>Discord:</strong> dealfi_30409</p>
+        <p class="small"><strong>Roblox:</strong> MVTOEP · <strong>Discord:</strong> dealfi_30409</p>
       </section>
     </main>
 
-    <footer style="text-align:center;color:#a9b7c6;margin:28px 0 60px">© 2025 Delfi. v2.2 (SM64 integrado)</footer>
+    <footer>© 2025 Delfi — Diseño Vocaloid · Todos los derechos reservados.</footer>
+    <div class="version">v2.3</div>
 
     <input id="kbdFocus" type="text" inputmode="none" aria-hidden="true" />
 
     <script>
-      /************************************************************************
-       * Configuración
-       *
-       * Si tienes un port SM64 alojado en tu servidor (misma origen),
-       * pon su URL aquí (por ejemplo: '/sm64/' o '/sm64js/').
-       *
-       * Si no tienes un port local, deja SM64_PORT_URL = null y usa el iframe
-       * para abrir un port público en nueva pestaña (el usuario deberá subir la ROM
-       * dentro del port).
-       ************************************************************************/
-      const SM64_PORT_URL = null; // ejemplo: '/sm64/'  (pon la ruta si lo alojas tú)
-
-      /* Helpers de log y UI */
+      /* ============================
+         Utilidades y log
+         ============================ */
       const logEl = document.getElementById('log');
-      function log(...args){
-        const line = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
-        logEl.textContent = line + '\n' + logEl.textContent;
-        console.log(...args);
-      }
-      function detectRomFormat(uint8){
-        if(!uint8 || uint8.length<4) return 'desconocido';
-        const b0=uint8[0], b1=uint8[1], b2=uint8[2], b3=uint8[3];
-        if(b0===0x80 && b1===0x37 && b2===0x12 && b3===0x40) return '.z64 (big-endian)';
-        if(b0===0x40 && b1===0x12 && b2===0x37 && b3===0x80) return '.n64 (little-endian)';
-        if(b0===0x37 && b1===0x80 && b2===0x40 && b3===0x12) return '.v64 (byte-swapped)';
-        return 'posible ROM N64 (encabezado no estándar)';
-      }
+      function log(...args){ const line = args.map(a => (typeof a==='object'? JSON.stringify(a): String(a))).join(' '); logEl.textContent = line + '\\n' + logEl.textContent; console.log(...args); }
 
-      /* Elementos */
-      const romInput = document.getElementById('romInput');
-      const loadSm64Btn = document.getElementById('loadSm64Btn');
-      const fileNameEl = document.getElementById('fileName');
-      const fileSizeEl = document.getElementById('fileSize');
-      const romFormatEl = document.getElementById('romFormat');
-      const openSm64NewTab = document.getElementById('openSm64NewTab');
-      const n64Canvas = document.getElementById('n64Canvas');
-      const sm64EmbedContainer = document.getElementById('sm64EmbedContainer');
-      const sm64EmbedPlaceholder = document.getElementById('sm64EmbedPlaceholder');
-      const loadSm64Embed = document.getElementById('loadSm64Embed');
-      const sm64Fullscreen = document.getElementById('sm64Fullscreen');
-      const n64Pause = document.getElementById('n64Pause');
+      /* ============================
+         Prevent scroll only when interacting
+         ============================ */
+      (function(){
+        const interactiveSelectors = ['#game-area','#snakeGame','#spaceGame','#embedContainer','.controls','.embed','#n64Canvas','#sm64EmbedContainer'];
+        const interactiveEls = interactiveSelectors.map(s=>Array.from(document.querySelectorAll(s))).flat();
+        function isInsideInteractive(target){ if(!target) return false; for(const el of interactiveEls){ if(!el) continue; if(el===target||el.contains(target)) return true; } return false; }
+        const keysToBlock = new Set(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','z']);
+        document.addEventListener('keydown', function(e){ const key=(e.key||'').toLowerCase(); if(!keysToBlock.has(key)) return; const active=document.activeElement; if(active && (active.tagName==='INPUT' || active.tagName==='TEXTAREA' || active.isContentEditable)) return; if(isInsideInteractive(e.target)) e.preventDefault(); }, { passive:false });
+      })();
 
-      let romBuffer = null;
-      let romFile = null;
-      let emulatorInstance = null;
-      let paused = false;
-      let iframeEl = null;
+      /* ============================
+         Selective touch handling
+         ============================ */
+      (function(){
+        const interactiveSelectors = ['#game-area','#snakeGame','#spaceGame','.controls','.embed','#embedContainer','#n64Canvas','#sm64EmbedContainer'];
+        const interactiveEls = interactiveSelectors.map(s=>Array.from(document.querySelectorAll(s))).flat();
+        function isInsideInteractive(target){ if(!target) return false; for(const el of interactiveEls){ if(!el) continue; if(el===target||el.contains(target)) return true; } return false; }
+        let touchStartedInInteractive=false;
+        document.addEventListener('touchstart', (e)=>{ const t=e.targetTouches && e.targetTouches[0]; const target = t ? document.elementFromPoint(t.clientX,t.clientY) : e.target; touchStartedInInteractive = isInsideInteractive(target); }, { passive:true });
+        document.addEventListener('touchmove', (e)=>{ if(touchStartedInInteractive) e.preventDefault(); }, { passive:false });
+        document.addEventListener('touchend', ()=>{ touchStartedInInteractive=false; }, { passive:true });
+        document.addEventListener('pointerdown', (e)=>{ touchStartedInInteractive = isInsideInteractive(e.target); }, { passive:true });
+        document.addEventListener('pointermove', (e)=>{ if(touchStartedInInteractive) e.preventDefault(); }, { passive:false });
+        document.addEventListener('pointerup', ()=>{ touchStartedInInteractive=false; }, { passive:true });
+      })();
 
-      romInput.addEventListener('change', async (e) => {
-        const f = e.target.files[0];
-        if (!f) return;
-        romFile = f;
-        fileNameEl.textContent = f.name;
-        fileSizeEl.textContent = (f.size/1024/1024).toFixed(2) + ' MB';
-        try {
-          const ab = await f.arrayBuffer();
-          const view = new Uint8Array(ab.slice(0, 16));
-          const fmt = detectRomFormat(view);
-          romFormatEl.textContent = fmt;
-          romBuffer = ab;
-          loadSm64Btn.disabled = false;
-          log('ROM leída en memoria. Formato detectado:', fmt);
-        } catch (err) {
-          log('Error leyendo ROM:', err);
-          romBuffer = null;
-          loadSm64Btn.disabled = true;
+      /* ============================
+         Atrapa el cuadrado
+         ============================ */
+      (function(){
+        const square=document.getElementById('square'), gameArea=document.getElementById('game-area'), scoreDisplay=document.getElementById('score');
+        let score=0;
+        function moveSquare(){ const maxX=Math.max(1, gameArea.clientWidth - square.clientWidth); const maxY=Math.max(1, gameArea.clientHeight - square.clientHeight); const x=Math.floor(Math.random()*maxX), y=Math.floor(Math.random()*maxY); square.style.left = x+'px'; square.style.top = y+'px'; }
+        function addPoint(){ score++; scoreDisplay.textContent='Puntos: '+score; moveSquare(); }
+        square.addEventListener('click', addPoint);
+        square.addEventListener('touchstart', function(e){ e.preventDefault(); addPoint(); }, { passive:false });
+        setInterval(moveSquare, 2000); moveSquare();
+      })();
+
+      /* ============================
+         Snake (WASD)
+         ============================ */
+      (function(){
+        const canvas=document.getElementById('snakeGame'), ctx=canvas.getContext('2d');
+        const box=20; let snake=[{x:9*box,y:10*box}]; let food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box};
+        let dir=null, points=0; const scoreEl=document.getElementById('snakeScore');
+        function setDir(newDir){ if(newDir==='LEFT'&&dir==='RIGHT') return; if(newDir==='RIGHT'&&dir==='LEFT') return; if(newDir==='UP'&&dir==='DOWN') return; if(newDir==='DOWN'&&dir==='UP') return; dir=newDir; }
+        window.setDir = setDir;
+        document.addEventListener('keydown', (e)=>{ const k=(e.key||'').toLowerCase(); if(k==='a'){ setDir('LEFT'); document.getElementById('keyA').classList.add('active'); } else if(k==='w'){ setDir('UP'); document.getElementById('keyW').classList.add('active'); } else if(k==='d'){ setDir('RIGHT'); document.getElementById('keyD').classList.add('active'); } else if(k==='s'){ setDir('DOWN'); document.getElementById('keyS').classList.add('active'); } });
+        document.addEventListener('keyup', (e)=>{ const k=(e.key||'').toLowerCase(); if(k==='a') document.getElementById('keyA').classList.remove('active'); else if(k==='w') document.getElementById('keyW').classList.remove('active'); else if(k==='d') document.getElementById('keyD').classList.remove('active'); else if(k==='s') document.getElementById('keyS').classList.remove('active'); });
+        function collision(head,array){ for(let i=0;i<array.length;i++) if(head.x===array[i].x && head.y===array[i].y) return true; return false; }
+        function reset(){ snake=[{x:9*box,y:10*box}]; dir=null; points=0; scoreEl.textContent='Puntos: 0'; food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box}; }
+        function draw(){ ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=0;i<snake.length;i++){ ctx.fillStyle = i===0 ? 'lime' : 'white'; ctx.fillRect(snake[i].x,snake[i].y,box,box); } ctx.fillStyle='red'; ctx.fillRect(food.x,food.y,box,box); let snakeX=snake[0].x, snakeY=snake[0].y; if(dir==='LEFT') snakeX-=box; if(dir==='UP') snakeY-=box; if(dir==='RIGHT') snakeX+=box; if(dir==='DOWN') snakeY+=box; if(snakeX===food.x && snakeY===food.y){ points++; scoreEl.textContent='Puntos: '+points; food={x:Math.floor(Math.random()*20)*box,y:Math.floor(Math.random()*20)*box}; } else snake.pop(); const newHead={x:snakeX,y:snakeY}; if(snakeX<0||snakeY<0||snakeX>=canvas.width||snakeY>=canvas.height||collision(newHead,snake)){ reset(); return; } snake.unshift(newHead); }
+        function addHold(button,action,interval=120){ let h=null; const start=(e)=>{ e.preventDefault(); action(); if(h) clearInterval(h); h=setInterval(action,interval); button.classList.add('active'); }; const stop=()=>{ if(h){ clearInterval(h); h=null; } button.classList.remove('active'); }; button.addEventListener('touchstart',start,{passive:false}); button.addEventListener('mousedown',start); button.addEventListener('touchend',stop); button.addEventListener('mouseup',stop); button.addEventListener('mouseleave',stop); button.addEventListener('click',(e)=>{ e.preventDefault(); action(); }); }
+        const sUp=document.getElementById('snakeUp'), sLeft=document.getElementById('snakeLeft'), sDown=document.getElementById('snakeDown'), sRight=document.getElementById('snakeRight');
+        if(sUp) addHold(sUp, ()=> { setDir('UP'); document.getElementById('keyW').classList.add('active'); setTimeout(()=>document.getElementById('keyW').classList.remove('active'),120); });
+        if(sLeft) addHold(sLeft, ()=> { setDir('LEFT'); document.getElementById('keyA').classList.add('active'); setTimeout(()=>document.getElementById('keyA').classList.remove('active'),120); });
+        if(sDown) addHold(sDown, ()=> { setDir('DOWN'); document.getElementById('keyS').classList.add('active'); setTimeout(()=>document.getElementById('keyS').classList.remove('active'),120); });
+        if(sRight) addHold(sRight, ()=> { setDir('RIGHT'); document.getElementById('keyD').classList.add('active'); setTimeout(()=>document.getElementById('keyD').classList.remove('active'),120); });
+        setInterval(draw, 100);
+      })();
+
+      /* ============================
+         Space Invaders (Arrows + Z)
+         ============================ */
+      (function(){
+        const canvas=document.getElementById('spaceGame'), ctx=canvas.getContext('2d');
+        window.ship={x:180,y:350,w:40,h:16}; window.bullets=window.bullets||[]; let enemies=[]; let enemyDir=1; let enemySpeed=0.5; const statusEl=document.getElementById('spaceStatus');
+        function createEnemies(){ enemies=[]; for(let r=0;r<3;r++) for(let c=0;c<5;c++) enemies.push({x:c*60+30,y:r*40+30,w:30,h:18,alive:true}); }
+        createEnemies();
+        document.addEventListener('keydown',(e)=>{ const k=(e.key||'').toLowerCase(); if(k==='arrowleft'){ window.ship.x=Math.max(0,window.ship.x-20); document.getElementById('keyLeft').classList.add('active'); } if(k==='arrowright'){ window.ship.x=Math.min(canvas.width-window.ship.w,window.ship.x+20); document.getElementById('keyRight').classList.add('active'); } if(k==='z'){ window.bullets.push({x:window.ship.x+window.ship.w/2-2,y:window.ship.y,w:4,h:10}); document.getElementById('keyZ').classList.add('active'); } });
+        document.addEventListener('keyup',(e)=>{ const k=(e.key||'').toLowerCase(); if(k==='arrowleft') document.getElementById('keyLeft').classList.remove('active'); if(k==='arrowright') document.getElementById('keyRight').classList.remove('active'); if(k==='z') document.getElementById('keyZ').classList.remove('active'); });
+        function updateEnemies(){ let minX=Infinity,maxX=-Infinity; enemies.forEach(e=>{ if(!e.alive) return; minX=Math.min(minX,e.x); maxX=Math.max(maxX,e.x+e.w); }); if(minX===Infinity) return; if(maxX>=canvas.width-10 && enemyDir===1){ enemyDir=-1; enemies.forEach(e=>e.y+=10);} if(minX<=10 && enemyDir===-1){ enemyDir=1; enemies.forEach(e=>e.y+=10);} enemies.forEach(e=>{ if(e.alive) e.x+=enemyDir*enemySpeed; }); }
+        function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='lime'; ctx.fillRect(window.ship.x,window.ship.y,window.ship.w,window.ship.h); ctx.fillStyle='yellow'; window.bullets.forEach(b=>{ ctx.fillRect(b.x,b.y,b.w,b.h); b.y-=6; }); ctx.fillStyle='red'; enemies.forEach(e=>{ if(e.alive) ctx.fillRect(e.x,e.y,e.w,e.h); }); window.bullets = window.bullets.filter(b=>{ if(b.y<0) return false; for(let i=0;i<enemies.length;i++){ const e=enemies[i]; if(!e.alive) continue; if(b.x<e.x+e.w && b.x+b.w>e.x && b.y<e.y+e.h && b.y+b.h>e.y){ e.alive=false; return false; } } return true; }); updateEnemies(); const anyAlive = enemies.some(e=>e.alive); if(!anyAlive){ statusEl.textContent='¡Ganaste! Reiniciando...'; setTimeout(()=>{ createEnemies(); window.bullets=[]; statusEl.textContent=''; },1500); } else { const reached = enemies.some(e=>e.alive && e.y+e.h>=window.ship.y); if(reached){ statusEl.textContent='Has sido alcanzado. Reiniciando...'; setTimeout(()=>{ createEnemies(); window.ship.x=180; window.bullets=[]; statusEl.textContent=''; },1500); } } }
+        function addHold(button,action,interval=80){ let h=null; const start=(e)=>{ e.preventDefault(); action(); if(h) clearInterval(h); h=setInterval(action,interval); button.classList.add('active'); }; const stop=()=>{ if(h){ clearInterval(h); h=null; } button.classList.remove('active'); }; button.addEventListener('touchstart',start,{passive:false}); button.addEventListener('mousedown',start); button.addEventListener('touchend',stop); button.addEventListener('mouseup',stop); button.addEventListener('mouseleave',stop); button.addEventListener('click',(e)=>{ e.preventDefault(); action(); }); }
+        const spLeft=document.getElementById('spaceLeft'), spRight=document.getElementById('spaceRight'), spFire=document.getElementById('spaceFire');
+        if(spLeft) addHold(spLeft, ()=> { window.ship.x=Math.max(0,window.ship.x-6); document.getElementById('keyLeft').classList.add('active'); setTimeout(()=>document.getElementById('keyLeft').classList.remove('active'),120); });
+        if(spRight) addHold(spRight, ()=> { window.ship.x=Math.min(canvas.width-window.ship.w,window.ship.x+6); document.getElementById('keyRight').classList.add('active'); setTimeout(()=>document.getElementById('keyRight').classList.remove('active'),120); });
+        if(spFire) addHold(spFire, ()=> { window.bullets.push({x:window.ship.x+window.ship.w/2-2,y:window.ship.y,w:4,h:10}); document.getElementById('keyZ').classList.add('active'); setTimeout(()=>document.getElementById('keyZ').classList.remove('active'),120); });
+        setInterval(draw,40);
+      })();
+
+      /* ============================
+         Infinite Mac embed
+         ============================ */
+      (function(){
+        const embedUrl = "https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650";
+        const loadBtn = document.getElementById('loadInfiniteBtn');
+        const container = document.getElementById('embedContainer');
+        const placeholder = document.getElementById('embedPlaceholder');
+        const fsBtn = document.getElementById('emuladorFullscreen');
+        let iframeEl = null;
+        function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
+        loadBtn.addEventListener('click', ()=> {
+          if(iframeEl) return;
+          iframeEl = document.createElement('iframe');
+          iframeEl.src = embedUrl;
+          iframeEl.className = 'embed';
+          iframeEl.style.width='100%'; iframeEl.style.height='600px'; iframeEl.loading='lazy';
+          iframeEl.allow = "clipboard-write; fullscreen; autoplay";
+          iframeEl.title = "Infinite Mac System 7.5.3";
+          container.removeChild(placeholder); container.appendChild(iframeEl);
+          if(isMobile()) iframeEl.style.height='420px';
+        });
+        fsBtn.addEventListener('click', ()=> {
+          const iframe = container.querySelector('iframe');
+          if(!iframe){ alert('Primero carga el emulador aquí con "Cargar emulador aquí".'); return; }
+          try{ if(iframe.requestFullscreen) iframe.requestFullscreen(); else window.open(embedUrl,'_blank'); } catch(e){ window.open(embedUrl,'_blank'); }
+        });
+        const kbdFocus = document.getElementById('kbdFocus');
+        const openKbdBtn = document.getElementById('openKeyboard');
+        if(openKbdBtn) openKbdBtn.addEventListener('click', (e)=>{ e.preventDefault(); kbdFocus.setAttribute('inputmode','text'); kbdFocus.focus({preventScroll:true}); setTimeout(()=>kbdFocus.focus({preventScroll:true}),50); });
+      })();
+
+      /* ============================
+         SM64 integration: upload, embed and postMessage handshake
+         ============================ */
+      (function(){
+        const romInput = document.getElementById('romInput');
+        const loadBtn = document.getElementById('loadSm64Btn');
+        const fileNameEl = document.getElementById('fileName');
+        const fileSizeEl = document.getElementById('fileSize');
+        const romFormatEl = document.getElementById('romFormat');
+        const openNewTab = document.getElementById('openSm64NewTab');
+        const n64Canvas = document.getElementById('n64Canvas');
+        const sm64EmbedContainer = document.getElementById('sm64EmbedContainer');
+        const sm64EmbedPlaceholder = document.getElementById('sm64EmbedPlaceholder');
+        const loadSm64Embed = document.getElementById('loadSm64Embed');
+        let romBuffer = null, romFile = null, iframeEl = null, emulatorInstance = null, paused=false;
+
+        function detectRomFormat(uint8){
+          if(!uint8 || uint8.length<4) return 'desconocido';
+          const b0=uint8[0], b1=uint8[1], b2=uint8[2], b3=uint8[3];
+          if(b0===0x80 && b1===0x37 && b2===0x12 && b3===0x40) return '.z64 (big-endian)';
+          if(b0===0x40 && b1===0x12 && b2===0x37 && b3===0x80) return '.n64 (little-endian)';
+          if(b0===0x37 && b1===0x80 && b2===0x40 && b3===0x12) return '.v64 (byte-swapped)';
+          return 'posible ROM N64 (encabezado no estándar)';
         }
-      });
 
-      /* Abrir port en nueva pestaña (fallback) */
-      openSm64NewTab.addEventListener('click', () => {
-        // Si tienes un port público que acepte ROMs, pon su URL aquí.
-        // Por defecto abrimos la misma página en nueva pestaña para que el usuario
-        // pueda usar la interfaz alternativa.
-        window.open(window.location.href, '_blank', 'noopener');
-      });
-
-      /* Fullscreen canvas */
-      sm64Fullscreen.addEventListener('click', () => {
-        if (n64Canvas.requestFullscreen) n64Canvas.requestFullscreen();
-        else if (n64Canvas.webkitRequestFullscreen) n64Canvas.webkitRequestFullscreen();
-        else log('Fullscreen no soportado en este navegador.');
-      });
-
-      n64Pause.addEventListener('click', () => {
-        paused = !paused;
-        n64Pause.textContent = paused ? 'Reanudar' : 'Pausar';
-        if (emulatorInstance && typeof emulatorInstance.setPaused === 'function') {
-          emulatorInstance.setPaused(paused);
-        } else {
-          log('Pausa enviada (si el emulador lo soporta).');
-        }
-      });
-
-      /* Cargar port SM64 embebido (iframe) */
-      loadSm64Embed.addEventListener('click', () => {
-        if (iframeEl) return;
-        // Si tienes SM64_PORT_URL configurado y es del mismo origen, lo insertamos.
-        // Si SM64_PORT_URL es null, intentamos cargar un port público (no recomendado para pasar ROM).
-        const url = SM64_PORT_URL || 'https://sm64js.com/'; // si no tienes local, mostramos sm64js como referencia
-        iframeEl = document.createElement('iframe');
-        iframeEl.src = url;
-        iframeEl.className = 'embed';
-        iframeEl.style.width = '100%';
-        iframeEl.style.height = '600px';
-        iframeEl.loading = 'lazy';
-        iframeEl.allow = 'clipboard-write; fullscreen; autoplay';
-        iframeEl.title = 'SM64 Port';
-        // Reemplazamos placeholder por iframe
-        sm64EmbedContainer.removeChild(sm64EmbedPlaceholder);
-        sm64EmbedContainer.appendChild(iframeEl);
-
-        // Si el port está en el mismo origen y expone una función para recibir ROMs,
-        // intentaremos pasar la ROM por postMessage o llamando a una función global.
-        // Nota: cross-origin bloqueará el acceso directo; en ese caso el usuario debe subir la ROM dentro del iframe.
-        iframeEl.addEventListener('load', () => {
-          log('Port SM64 cargado en iframe:', url);
-          // Intento de handshake: preguntar al iframe si acepta ROM por postMessage
-          try {
-            iframeEl.contentWindow.postMessage({ type: 'SM64_PORT_PING', origin: window.location.origin }, '*');
-          } catch (err) {
-            log('No se pudo enviar mensaje al iframe (cross-origin). Si el iframe está en otro dominio, sube la ROM dentro del port o aloja el port en tu servidor.');
+        romInput.addEventListener('change', async (e)=> {
+          const f = e.target.files[0];
+          if(!f) return;
+          romFile = f;
+          fileNameEl.textContent = f.name;
+          fileSizeEl.textContent = (f.size/1024/1024).toFixed(2)+' MB';
+          try{
+            const ab = await f.arrayBuffer();
+            const view = new Uint8Array(ab.slice(0,16));
+            const fmt = detectRomFormat(view);
+            romFormatEl.textContent = fmt;
+            romBuffer = ab;
+            loadBtn.disabled = false;
+            log('ROM leída en memoria. Formato detectado:', fmt);
+          }catch(err){
+            log('Error leyendo ROM:', err);
+            romBuffer = null; loadBtn.disabled = true;
           }
         });
-      });
 
-      /* Intento de enviar ROM al iframe por postMessage (si el iframe lo acepta).
-         Esto solo funcionará si el iframe implementa un listener que acepte mensajes
-         y si la política de cross-origin lo permite. */
-      window.addEventListener('message', async (ev) => {
-        // Mensajes entrantes desde el iframe
-        const msg = ev.data;
-        if (!msg || typeof msg !== 'object') return;
-        if (msg.type === 'SM64_PORT_REQUEST_ROM') {
-          // El iframe solicita la ROM; intentamos enviarla por postMessage con transfer
-          if (!romBuffer) {
-            ev.source.postMessage({ type: 'SM64_PORT_ROM_MISSING' }, ev.origin);
-            log('El port solicitó la ROM pero no hay ROM cargada en la página.');
-            return;
-          }
-          try {
-            // Transferir ArrayBuffer (si el iframe lo acepta)
-            ev.source.postMessage({ type: 'SM64_PORT_ROM', filename: romFile.name, buffer: romBuffer }, ev.origin, [romBuffer]);
-            log('ROM enviada al port por postMessage (si el iframe lo acepta).');
-            // Nota: después de transferir, romBuffer queda neutro en algunos navegadores; si necesitas volver a usarlo, recarga el archivo.
-          } catch (err) {
-            // Si no se puede transferir, enviar sin transfer list (más lento)
-            try {
-              ev.source.postMessage({ type: 'SM64_PORT_ROM', filename: romFile.name, buffer: romBuffer }, ev.origin);
-              log('ROM enviada al port por postMessage (sin transfer list).');
-            } catch (err2) {
-              log('No se pudo enviar la ROM al iframe por postMessage:', err2);
+        openNewTab.addEventListener('click', ()=> {
+          // Abre sm64js público como referencia; si tienes un port local, abre su URL
+          window.open('https://sm64js.com/', '_blank', 'noopener');
+        });
+
+        loadSm64Embed.addEventListener('click', ()=> {
+          if(iframeEl) return;
+          // Carga sm64js público en iframe (si tienes tu propio port, cambia la URL)
+          const url = 'https://sm64js.com/';
+          iframeEl = document.createElement('iframe');
+          iframeEl.src = url;
+          iframeEl.className = 'embed';
+          iframeEl.style.width='100%'; iframeEl.style.height='600px'; iframeEl.loading='lazy';
+          iframeEl.allow = "clipboard-write; fullscreen; autoplay";
+          iframeEl.title = "SM64 Port";
+          sm64EmbedContainer.removeChild(sm64EmbedPlaceholder);
+          sm64EmbedContainer.appendChild(iframeEl);
+          iframeEl.addEventListener('load', ()=> {
+            log('Port SM64 cargado en iframe:', url);
+            try { iframeEl.contentWindow.postMessage({ type:'SM64_PORT_PING' }, '*'); } catch(err){ log('No se pudo comunicar con iframe (cross-origin).'); }
+          });
+        });
+
+        // Mensajes entrantes desde iframe
+        window.addEventListener('message', async (ev) => {
+          const msg = ev.data;
+          if(!msg || typeof msg !== 'object') return;
+          if(msg.type === 'SM64_PORT_REQUEST_ROM'){
+            if(!romBuffer){ ev.source.postMessage({ type:'SM64_PORT_ROM_MISSING' }, ev.origin); log('El port solicitó la ROM pero no hay ROM cargada.'); return; }
+            try{
+              ev.source.postMessage({ type:'SM64_PORT_ROM', filename: romFile.name, buffer: romBuffer }, ev.origin, [romBuffer]);
+              log('ROM enviada al port por postMessage (transfer).');
+            }catch(err){
+              try{ ev.source.postMessage({ type:'SM64_PORT_ROM', filename: romFile.name, buffer: romBuffer }, ev.origin); log('ROM enviada al port por postMessage (sin transfer).'); } catch(err2){ log('No se pudo enviar la ROM al iframe por postMessage:', err2); }
             }
           }
-        }
-        // Respuestas de handshake
-        if (msg.type === 'SM64_PORT_PONG') {
-          log('Port SM64 respondió al handshake. Si quieres, pulsa "Cargar ROM en emulador" para enviarla.');
-        }
-      });
+          if(msg.type === 'SM64_PORT_PONG'){ log('Port SM64 respondió al handshake.'); }
+        });
 
-      /* Botón "Cargar ROM en emulador" (intenta usar API global si existe, o postMessage) */
-      loadSm64Btn.addEventListener('click', async () => {
-        if (!romBuffer) { log('No hay ROM cargada.'); return; }
-        log('Intentando iniciar emulador con la ROM...');
-
-        // 1) Si existe una función global startEmulator (port incluido en la misma página), la usamos
-        if (typeof startEmulator === 'function') {
-          try {
-            emulatorInstance = await startEmulator(romBuffer, n64Canvas, (m) => log('[emu] ' + m));
-            log('Emulador iniciado con startEmulator().');
-            return;
-          } catch (err) {
-            log('Error al llamar startEmulator:', err);
-          }
-        }
-
-        // 2) Si hay un iframe del port y está en el mismo origen, intentamos llamar a una función global dentro del iframe
-        if (iframeEl) {
-          try {
-            // Si el iframe expone window.receiveROMFromParent, llamamos directamente (solo mismo origen)
-            if (iframeEl.contentWindow && typeof iframeEl.contentWindow.receiveROMFromParent === 'function') {
-              iframeEl.contentWindow.receiveROMFromParent(romBuffer, romFile.name);
-              log('Llamada directa a receiveROMFromParent en iframe (mismo origen).');
+        // Botón "Cargar ROM en emulador"
+        loadBtn.addEventListener('click', async ()=> {
+          if(!romBuffer){ log('No hay ROM cargada.'); return; }
+          log('Intentando iniciar emulador con la ROM...');
+          // 1) Si existe startEmulator en la página (port integrado), usarlo
+          if(typeof startEmulator === 'function'){
+            try{
+              emulatorInstance = await startEmulator(romBuffer, n64Canvas, (m)=>log('[emu] '+m));
+              log('Emulador iniciado con startEmulator().');
               return;
-            }
-          } catch (err) {
-            log('No se pudo llamar a receiveROMFromParent en iframe (probablemente cross-origin):', err);
+            }catch(err){ log('Error startEmulator:', err); }
           }
-
-          // 3) Si no hay API directa, pedimos al iframe que solicite la ROM y la enviaremos por postMessage
-          try {
-            iframeEl.contentWindow.postMessage({ type: 'SM64_PORT_REQUEST_ROM' }, '*');
-            log('Se solicitó al iframe que pida la ROM (postMessage). Si el iframe lo soporta, la recibirá.');
-            return;
-          } catch (err) {
-            log('No se pudo enviar postMessage al iframe (cross-origin).');
+          // 2) Si hay iframe y es mismo origen, intentar llamada directa
+          if(iframeEl){
+            try{
+              if(iframeEl.contentWindow && typeof iframeEl.contentWindow.receiveROMFromParent === 'function'){
+                iframeEl.contentWindow.receiveROMFromParent(romBuffer, romFile.name);
+                log('Llamada directa a receiveROMFromParent en iframe (mismo origen).');
+                return;
+              }
+            }catch(err){ log('No se pudo llamar a receiveROMFromParent (cross-origin).'); }
+            // 3) Pedir al iframe que solicite la ROM
+            try{
+              iframeEl.contentWindow.postMessage({ type:'SM64_PORT_REQUEST_ROM' }, '*');
+              log('Se solicitó al iframe que pida la ROM (postMessage).');
+              return;
+            }catch(err){ log('No se pudo enviar postMessage al iframe (cross-origin).'); }
           }
-        }
+          // 4) Fallback: instrucción al usuario
+          log('No se detectó un port integrado que acepte la ROM automáticamente. Abre el port en nueva pestaña y sube la ROM allí.');
+        });
 
-        // 4) Si no hay iframe o no se puede comunicar, mostramos instrucción al usuario
-        log('No se detectó un port integrado que acepte la ROM automáticamente.');
-        log('Opciones: 1) Aloja un port SM64 en el mismo dominio y actualiza SM64_PORT_URL; 2) Abre el port en nueva pestaña y sube la ROM allí.');
-      });
+        // Fullscreen helper
+        document.getElementById('sm64Fullscreen').addEventListener('click', ()=> {
+          if(n64Canvas.requestFullscreen) n64Canvas.requestFullscreen();
+          else if(n64Canvas.webkitRequestFullscreen) n64Canvas.webkitRequestFullscreen();
+          else log('Fullscreen no soportado.');
+        });
 
-      /* Mostrar errores globales en el log */
-      window.addEventListener('error', (e) => log('Error global:', e.message || e));
-      window.addEventListener('unhandledrejection', (e) => log('Unhandled rejection:', e.reason || e));
+        // Pause helper
+        document.getElementById('n64Pause').addEventListener('click', ()=> {
+          paused = !paused;
+          document.getElementById('n64Pause').textContent = paused ? 'Reanudar' : 'Pausar';
+          if(emulatorInstance && typeof emulatorInstance.setPaused === 'function') emulatorInstance.setPaused(paused);
+          else log('Pausa enviada (si el emulador lo soporta).');
+        });
+
+      })();
+
+      // small passive touchstart to improve mobile UX
+      document.addEventListener('touchstart', function(){}, {passive:true});
     </script>
   </body>
 </html>
