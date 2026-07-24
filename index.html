@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Delfi — Juegos y Emuladores (v2.7)</title>
+  <title>Delfi — Juegos y Emuladores (v2.9)</title>
   <meta name="description" content="Página de Delfi: juegos, emuladores, estética Vocaloid y sonidos en los juegos." />
   <style>
     :root{
@@ -66,19 +66,42 @@
       100% {background: black;}
     }
     #partyModeBtn.active{ box-shadow:0 0 18px var(--accent-2); }
+    .visits-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 12px;border-radius:999px;background:rgba(107,224,255,0.08);border:1px solid var(--glass);color:var(--muted);font-size:0.9rem;font-weight:700}
+
+    /* Popup de idioma */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,4,15,0.72);backdrop-filter:blur(3px);z-index:200;align-items:center;justify-content:center;padding:16px}
+    .modal-overlay.open{display:flex}
+    .modal-card{background:linear-gradient(180deg,var(--card),#0b0d16);border:1px solid var(--glass);border-radius:16px;padding:24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+    .modal-card h3{margin:0 0 8px}
+    .lang-options{display:flex;flex-direction:column;gap:10px;margin:16px 0}
+    .lang-option{font-size:1rem}
   </style>
 </head>
 <body>
 <header>
   <nav>
-    <a href="#inicio">Inicio</a>
-    <a href="#canal">Canal</a>
-    <a href="#juegos">Juegos</a>
+    <a href="#inicio" data-i18n="nav.inicio">Inicio</a>
+    <a href="#canal" data-i18n="nav.canal">Canal</a>
+    <a href="#juegos" data-i18n="nav.juegos">Juegos</a>
     <a href="#emulador">Infinite Mac</a>
-    <a href="#contacto">Contacto</a>
-    <button class="btn alt" id="partyModeBtn" type="button" aria-pressed="false">🎉 Modo Fiesta</button>
+    <a href="#contacto" data-i18n="nav.contacto">Contacto</a>
+    <button class="btn alt" id="partyModeBtn" type="button" aria-pressed="false" data-i18n="nav.party">🎉 Modo Fiesta</button>
+    <button class="btn alt" id="langToggleBtn" type="button">🌐 Idioma</button>
   </nav>
 </header>
+
+<!-- Popup de selección de idioma -->
+<div class="modal-overlay" id="langModalOverlay">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="langModalTitle">
+    <h3 id="langModalTitle">🌐 <span data-i18n="lang.modal.title">Elige tu idioma</span></h3>
+    <p class="small" data-i18n="lang.modal.text">¿En qué idioma quieres ver la página?</p>
+    <div class="lang-options">
+      <button class="btn lang-option" id="langOptionEs" type="button">🇪🇸 Español</button>
+      <button class="btn lang-option" id="langOptionEn" type="button">🇬🇧 English</button>
+    </div>
+    <button class="btn alt" id="langModalClose" type="button" data-i18n="lang.modal.close">Cerrar</button>
+  </div>
+</div>
 
 <main id="inicio">
   <!-- Hero -->
@@ -86,32 +109,35 @@
     <div class="logo-wrap" style="position:relative;display:inline-block;">
       <img src="imagenes/canal.png" alt="Logo del canal de Delfi" class="logo-canal" width="160" height="160" loading="lazy" />
     </div>
-    <h1>Hola, soy Delfi</h1>
-    <p class="note">Bienvenido a mi página: estética Vocaloid, juegos y emuladores. Versión v2.7</p>
+    <h1 data-i18n="hero.title">Hola, soy Delfi</h1>
+    <p class="note"><span data-i18n="hero.note">Bienvenido a mi página: estética Vocaloid, juegos y emuladores.</span> <span id="versionLabel">Versión v2.9</span></p>
+    <div class="visits-badge" id="visitsBadge" title="Contador de visitas">
+      <span>👥</span> <span data-i18n="visits.label">Visitas</span>: <span id="visitsCount">…</span>
+    </div>
   </section>
 
   <!-- Canal -->
   <section id="canal" class="card">
-    <h2>🎥 Mi canal de YouTube</h2>
-    <p class="small">Visita mi canal para ver mis videos y suscribirte.</p>
-    <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank" rel="noopener">Ir a mi canal</a>
+    <h2 data-i18n="canal.title">🎥 Mi canal de YouTube</h2>
+    <p class="small" data-i18n="canal.text">Visita mi canal para ver mis videos y suscribirte.</p>
+    <a class="btn" href="https://www.youtube.com/@Delfi-XDoriginal13" target="_blank" rel="noopener" data-i18n="canal.btn">Ir a mi canal</a>
   </section>
 
   <!-- Infografía -->
   <section id="infografia" class="card">
-    <h2>📌 Mini Infografía</h2>
-    <p class="note">Me encanta la tecnología retro y moderna. Desarrollo en Roblox y subo videos.</p>
+    <h2 data-i18n="info.title">📌 Mini Infografía</h2>
+    <p class="note" data-i18n="info.text">Me encanta la tecnología retro y moderna. Desarrollo en Roblox y subo videos.</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <div style="flex:1;min-width:200px">
-        <strong>Intereses</strong>
+        <strong data-i18n="info.interests">Intereses</strong>
         <ul class="small">
-          <li>Tecnología retro y moderna</li>
-          <li>Desarrollo en Roblox</li>
-          <li>Videos y streaming</li>
+          <li data-i18n="info.li1">Tecnología retro y moderna</li>
+          <li data-i18n="info.li2">Desarrollo en Roblox</li>
+          <li data-i18n="info.li3">Videos y streaming</li>
         </ul>
       </div>
       <div style="flex:1;min-width:200px">
-        <strong>Redes</strong>
+        <strong data-i18n="info.social">Redes</strong>
         <p class="small">Roblox: <strong>MVTOEP</strong><br>Discord: <strong>dealfi_30409</strong></p>
       </div>
     </div>
@@ -119,11 +145,11 @@
 
   <!-- Juegos -->
   <section id="juegos" class="card">
-    <h2>🎮 Juegos</h2>
+    <h2 data-i18n="games.title">🎮 Juegos</h2>
 
     <!-- Atrapa -->
     <div style="margin-bottom:18px">
-      <h3>Atrapa el cuadrado</h3>
+      <h3 data-i18n="games.catch.title">Atrapa el cuadrado</h3>
       <div id="score">Puntos: 0</div>
       <div id="game-area"><div id="square" role="button" aria-label="Cuadrado objetivo"></div></div>
     </div>
@@ -151,7 +177,7 @@
 
     <!-- Space -->
     <div>
-      <h3>👾 Space Invaders (Flechas + Z)</h3>
+      <h3 data-i18n="games.space.title">👾 Space Invaders (Flechas + Z)</h3>
       <canvas id="spaceGame" width="400" height="400" aria-label="Canvas Space Invaders"></canvas>
       <p id="spaceStatus" class="small"></p>
       <div class="controls" style="margin-top:8px">
@@ -172,24 +198,24 @@
 
   <!-- Infinite Mac -->
   <section id="emulador" class="card">
-    <h2>🖥️ Emulador Infinite Mac — System 7.5.3</h2>
+    <h2 data-i18n="emu.title">🖥️ Emulador Infinite Mac — System 7.5.3</h2>
     <div class="row" style="justify-content:center;gap:8px">
-      <button class="btn" id="loadInfiniteBtn">Cargar emulador aquí</button>
-      <a class="btn alt" href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener">Abrir en nueva pestaña</a>
-      <button class="btn alt" id="emuladorFullscreen">Pantalla completa</button>
+      <button class="btn" id="loadInfiniteBtn" data-i18n="emu.load">Cargar emulador aquí</button>
+      <a class="btn alt" href="https://infinitemac.org/embed?disk=System+7.5.3&infinite_hd=true&machine=Quadra+650" target="_blank" rel="noopener" data-i18n="emu.newtab">Abrir en nueva pestaña</a>
+      <button class="btn alt" id="emuladorFullscreen" data-i18n="emu.fullscreen">Pantalla completa</button>
     </div>
-    <div id="embedContainer" style="margin-top:12px;text-align:center;color:var(--muted)">Pulsa "Cargar emulador aquí".</div>
+    <div id="embedContainer" style="margin-top:12px;text-align:center;color:var(--muted)" data-i18n="emu.hint">Pulsa "Cargar emulador aquí".</div>
   </section>
 
   <!-- Contacto -->
   <section id="contacto" class="card">
-    <h2>📲 Contacto</h2>
+    <h2 data-i18n="contact.title">📲 Contacto</h2>
     <p class="small"><strong>Roblox:</strong> MVTOEP · <strong>Discord:</strong> dealfi_30409</p>
   </section>
 </main>
 
-<footer>© 2025 Delfi — Diseño Vocaloid</footer>
-<div class="version">v2.7</div>
+<footer><span data-i18n="footer.text">© 2025 Delfi — Diseño Vocaloid</span></footer>
+<div class="version">v2.9</div>
 
 <!-- Audio assets (hosted public sounds) -->
 <audio id="sfx-beep" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
@@ -203,6 +229,165 @@
 async function safePlay(audioEl){
   try { await audioEl.play(); } catch(e) { /* ignore if blocked until user interacts */ }
 }
+
+/* ===== VERSIÓN DE LA PÁGINA ===== */
+const PAGE_VERSION = '2.9'; // súbela cada vez que hagamos un cambio nuevo
+
+/* ===== IDIOMA (ES/EN) ===== */
+const translations = {
+  es: {
+    'nav.inicio':'Inicio', 'nav.canal':'Canal', 'nav.juegos':'Juegos', 'nav.contacto':'Contacto',
+    'nav.party':'🎉 Modo Fiesta',
+    'lang.modal.title':'Elige tu idioma',
+    'lang.modal.text':'¿En qué idioma quieres ver la página?',
+    'lang.modal.close':'Cerrar',
+    'hero.title':'Hola, soy Delfi',
+    'hero.note':'Bienvenido a mi página: estética Vocaloid, juegos y emuladores.',
+    'visits.label':'Visitas',
+    'canal.title':'🎥 Mi canal de YouTube',
+    'canal.text':'Visita mi canal para ver mis videos y suscribirte.',
+    'canal.btn':'Ir a mi canal',
+    'info.title':'📌 Mini Infografía',
+    'info.text':'Me encanta la tecnología retro y moderna. Desarrollo en Roblox y subo videos.',
+    'info.interests':'Intereses',
+    'info.li1':'Tecnología retro y moderna',
+    'info.li2':'Desarrollo en Roblox',
+    'info.li3':'Videos y streaming',
+    'info.social':'Redes',
+    'games.title':'🎮 Juegos',
+    'games.catch.title':'Atrapa el cuadrado',
+    'games.space.title':'👾 Space Invaders (Flechas + Z)',
+    'emu.title':'🖥️ Emulador Infinite Mac — System 7.5.3',
+    'emu.load':'Cargar emulador aquí',
+    'emu.newtab':'Abrir en nueva pestaña',
+    'emu.fullscreen':'Pantalla completa',
+    'emu.hint':'Pulsa "Cargar emulador aquí".',
+    'emu.alert':'Primero carga el emulador aquí con "Cargar emulador aquí".',
+    'contact.title':'📲 Contacto',
+    'footer.text':'© 2025 Delfi — Diseño Vocaloid',
+    'points':'Puntos',
+    'space.win':'¡Ganaste! Reiniciando...',
+    'space.hit':'Has sido alcanzado. Reiniciando...'
+  },
+  en: {
+    'nav.inicio':'Home', 'nav.canal':'Channel', 'nav.juegos':'Games', 'nav.contacto':'Contact',
+    'nav.party':'🎉 Party Mode',
+    'lang.modal.title':'Choose your language',
+    'lang.modal.text':'Which language would you like to view the page in?',
+    'lang.modal.close':'Close',
+    'hero.title':'Hi, I\'m Delfi',
+    'hero.note':'Welcome to my page: Vocaloid aesthetic, games and emulators.',
+    'visits.label':'Visits',
+    'canal.title':'🎥 My YouTube channel',
+    'canal.text':'Visit my channel to watch my videos and subscribe.',
+    'canal.btn':'Go to my channel',
+    'info.title':'📌 Mini Infographic',
+    'info.text':'I love retro and modern technology. I develop on Roblox and upload videos.',
+    'info.interests':'Interests',
+    'info.li1':'Retro and modern technology',
+    'info.li2':'Roblox development',
+    'info.li3':'Videos and streaming',
+    'info.social':'Social',
+    'games.title':'🎮 Games',
+    'games.catch.title':'Catch the square',
+    'games.space.title':'👾 Space Invaders (Arrows + Z)',
+    'emu.title':'🖥️ Infinite Mac Emulator — System 7.5.3',
+    'emu.load':'Load emulator here',
+    'emu.newtab':'Open in new tab',
+    'emu.fullscreen':'Full screen',
+    'emu.hint':'Click "Load emulator here".',
+    'emu.alert':'First load the emulator here using "Load emulator here".',
+    'contact.title':'📲 Contact',
+    'footer.text':'© 2025 Delfi — Vocaloid Design',
+    'points':'Points',
+    'space.win':'You won! Restarting...',
+    'space.hit':'You got hit! Restarting...'
+  }
+};
+
+const LANG_KEY = 'delfi-lang';
+window.getLang = function(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'es'; };
+window.t = function(key){
+  const lang = window.getLang();
+  return (translations[lang] && translations[lang][key]) || (translations.es[key] || key);
+};
+
+function refreshDynamicText(){
+  // Nota de versión (se mantiene aparte para no perder el número al traducir)
+  const versionLabel = document.getElementById('versionLabel');
+  if(versionLabel) versionLabel.textContent = (window.getLang()==='en' ? 'Version v' : 'Versión v') + PAGE_VERSION;
+  // Puntajes visibles
+  const scoreEl = document.getElementById('score');
+  if(scoreEl && window.catchScore !== undefined) scoreEl.textContent = t('points') + ': ' + window.catchScore;
+  const snakeScoreEl = document.getElementById('snakeScore');
+  if(snakeScoreEl && window.snakePoints !== undefined) snakeScoreEl.textContent = t('points') + ': ' + window.snakePoints;
+}
+
+function applyLanguage(lang){
+  document.documentElement.setAttribute('lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  try { localStorage.setItem(LANG_KEY, lang); } catch(e){}
+  refreshDynamicText();
+}
+
+function openLangModal(){
+  document.getElementById('langModalOverlay').classList.add('open');
+}
+function closeLangModal(){
+  document.getElementById('langModalOverlay').classList.remove('open');
+}
+
+(function(){
+  let savedLang = null;
+  try { savedLang = localStorage.getItem(LANG_KEY); } catch(e){}
+
+  applyLanguage(savedLang || 'es');
+
+  // Si nunca eligió idioma, le mostramos el popup automáticamente
+  if(!savedLang){
+    openLangModal();
+  }
+
+  document.getElementById('langToggleBtn').addEventListener('click', openLangModal);
+  document.getElementById('langModalClose').addEventListener('click', closeLangModal);
+  document.getElementById('langModalOverlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'langModalOverlay') closeLangModal();
+  });
+  document.getElementById('langOptionEs').addEventListener('click', ()=>{ applyLanguage('es'); closeLangModal(); });
+  document.getElementById('langOptionEn').addEventListener('click', ()=>{ applyLanguage('en'); closeLangModal(); });
+})();
+
+/* ===== CONTADOR DE VISITAS ===== */
+(function(){
+  const countEl = document.getElementById('visitsCount');
+  const NAMESPACE = 'delfi-web-personal';
+  const KEY = 'visitas';
+  const LOCAL_KEY = 'delfi-local-visits';
+
+  function localFallback(){
+    let n = 0;
+    try {
+      n = parseInt(localStorage.getItem(LOCAL_KEY) || '0', 10) + 1;
+      localStorage.setItem(LOCAL_KEY, String(n));
+    } catch(e){}
+    return n;
+  }
+
+  (async ()=>{
+    try {
+      const res = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+      if(!res.ok) throw new Error('countapi no disponible');
+      const data = await res.json();
+      countEl.textContent = data.value;
+    } catch(e){
+      // Si el servicio externo falla, usamos un conteo solo local como respaldo
+      countEl.textContent = localFallback() + ' *';
+    }
+  })();
+})();
 
 /* MODO FIESTA: toggle del fondo animado (segundo código) */
 (function(){
@@ -234,6 +419,7 @@ async function safePlay(audioEl){
   const scoreEl = document.getElementById('score');
   const sfxBeep = document.getElementById('sfx-beep');
   let score = 0;
+  window.catchScore = score;
 
   function moveSquare(){
     const maxX = Math.max(1, area.clientWidth - square.clientWidth);
@@ -246,7 +432,8 @@ async function safePlay(audioEl){
 
   function addPoint(){
     score++;
-    scoreEl.textContent = 'Puntos: ' + score;
+    window.catchScore = score;
+    scoreEl.textContent = t('points') + ': ' + score;
     safePlay(sfxBeep);
     moveSquare();
   }
@@ -267,6 +454,7 @@ async function safePlay(audioEl){
   let food = { x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box };
   let dir = null;
   let points = 0;
+  window.snakePoints = points;
   const scoreEl = document.getElementById('snakeScore');
   const sfxEat = document.getElementById('sfx-eat');
   const sfxCrash = document.getElementById('sfx-crash');
@@ -301,7 +489,8 @@ async function safePlay(audioEl){
     snake = [{ x: 9*box, y: 10*box }];
     dir = null;
     points = 0;
-    scoreEl.textContent = 'Puntos: 0';
+    window.snakePoints = points;
+    scoreEl.textContent = t('points') + ': 0';
     food = { x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box };
     safePlay(sfxCrash);
   }
@@ -327,7 +516,8 @@ async function safePlay(audioEl){
 
     if(snakeX === food.x && snakeY === food.y){
       points++;
-      scoreEl.textContent = 'Puntos: ' + points;
+      window.snakePoints = points;
+      scoreEl.textContent = t('points') + ': ' + points;
       food = { x: Math.floor(Math.random()*20)*box, y: Math.floor(Math.random()*20)*box };
       safePlay(sfxEat);
     } else {
@@ -461,12 +651,12 @@ async function safePlay(audioEl){
 
     const anyAlive = enemies.some(e => e.alive);
     if(!anyAlive){
-      statusEl.textContent = '¡Ganaste! Reiniciando...';
+      statusEl.textContent = t('space.win');
       setTimeout(()=>{ createEnemies(); bullets = []; statusEl.textContent = ''; }, 1500);
     } else {
       const reached = enemies.some(e => e.alive && e.y + e.h >= ship.y);
       if(reached){
-        statusEl.textContent = 'Has sido alcanzado. Reiniciando...';
+        statusEl.textContent = t('space.hit');
         setTimeout(()=>{ createEnemies(); ship.x = 180; bullets = []; statusEl.textContent = ''; }, 1500);
       }
     }
@@ -497,7 +687,7 @@ async function safePlay(audioEl){
   });
   fsBtn.addEventListener('click', ()=> {
     const iframe = container.querySelector('iframe');
-    if(!iframe){ alert('Primero carga el emulador aquí con "Cargar emulador aquí".'); return; }
+    if(!iframe){ alert(t('emu.alert')); return; }
     try{ if(iframe.requestFullscreen) iframe.requestFullscreen(); else window.open(embedUrl,'_blank'); } catch(e){ window.open(embedUrl,'_blank'); }
   });
 })();
@@ -523,6 +713,9 @@ async function safePlay(audioEl){
 
 /* Small touchstart to improve mobile UX */
 document.addEventListener('touchstart', function(){}, {passive:true});
+
+/* Asegura que los puntajes iniciales también respeten el idioma guardado */
+refreshDynamicText();
 </script>
 </body>
 </html>
