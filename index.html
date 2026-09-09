@@ -68,6 +68,13 @@
     #partyModeBtn.active{ box-shadow:0 0 18px var(--accent-2); }
     .visits-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 12px;border-radius:999px;background:rgba(107,224,255,0.08);border:1px solid var(--glass);color:var(--muted);font-size:0.9rem;font-weight:700}
 
+    /* Descargas */
+    .download-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.05);margin-bottom:8px;flex-wrap:wrap}
+    .download-item .dl-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .download-item .dl-name{color:var(--text);font-weight:700;word-break:break-all}
+    .download-item .dl-size{color:var(--muted);font-size:0.85rem}
+    .download-item .btn{padding:8px 12px;font-size:0.9rem;white-space:nowrap}
+
     /* Popup de idioma */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,4,15,0.72);backdrop-filter:blur(3px);z-index:200;align-items:center;justify-content:center;padding:16px}
     .modal-overlay.open{display:flex}
@@ -84,6 +91,7 @@
     <a href="#canal" data-i18n="nav.canal">Canal</a>
     <a href="#juegos" data-i18n="nav.juegos">Juegos</a>
     <a href="#emulador">Infinite Mac</a>
+    <a href="#descargas" data-i18n="nav.descargas">Descargas</a>
     <a href="#contacto" data-i18n="nav.contacto">Contacto</a>
     <button class="btn alt" id="partyModeBtn" type="button" aria-pressed="false" data-i18n="nav.party">🎉 Modo Fiesta</button>
     <button class="btn alt" id="langToggleBtn" type="button">🌐 Idioma</button>
@@ -207,6 +215,13 @@
     <div id="embedContainer" style="margin-top:12px;text-align:center;color:var(--muted)" data-i18n="emu.hint">Pulsa "Cargar emulador aquí".</div>
   </section>
 
+  <!-- Descargas -->
+  <section id="descargas" class="card">
+    <h2 data-i18n="downloads.title">📥 Descargas</h2>
+    <p class="small" data-i18n="downloads.text">Archivos que he subido al repositorio, listos para descargar.</p>
+    <div id="downloadsList" class="small" data-i18n="downloads.loading">Cargando lista de archivos…</div>
+  </section>
+
   <!-- Contacto -->
   <section id="contacto" class="card">
     <h2 data-i18n="contact.title">📲 Contacto</h2>
@@ -236,7 +251,7 @@ const PAGE_VERSION = '2.9'; // súbela cada vez que hagamos un cambio nuevo
 /* ===== IDIOMA (ES/EN) ===== */
 const translations = {
   es: {
-    'nav.inicio':'Inicio', 'nav.canal':'Canal', 'nav.juegos':'Juegos', 'nav.contacto':'Contacto',
+    'nav.inicio':'Inicio', 'nav.canal':'Canal', 'nav.juegos':'Juegos', 'nav.descargas':'Descargas', 'nav.contacto':'Contacto',
     'nav.party':'🎉 Modo Fiesta',
     'lang.modal.title':'Elige tu idioma',
     'lang.modal.text':'¿En qué idioma quieres ver la página?',
@@ -263,6 +278,12 @@ const translations = {
     'emu.fullscreen':'Pantalla completa',
     'emu.hint':'Pulsa "Cargar emulador aquí".',
     'emu.alert':'Primero carga el emulador aquí con "Cargar emulador aquí".',
+    'downloads.title':'📥 Descargas',
+    'downloads.text':'Archivos que he subido al repositorio, listos para descargar.',
+    'downloads.loading':'Cargando lista de archivos…',
+    'downloads.empty':'Todavía no hay archivos disponibles.',
+    'downloads.error':'No se pudo cargar la lista de archivos. Intenta más tarde.',
+    'downloads.btn':'Descargar',
     'contact.title':'📲 Contacto',
     'footer.text':'© 2025 Delfi — Diseño Vocaloid',
     'points':'Puntos',
@@ -270,7 +291,7 @@ const translations = {
     'space.hit':'Has sido alcanzado. Reiniciando...'
   },
   en: {
-    'nav.inicio':'Home', 'nav.canal':'Channel', 'nav.juegos':'Games', 'nav.contacto':'Contact',
+    'nav.inicio':'Home', 'nav.canal':'Channel', 'nav.juegos':'Games', 'nav.descargas':'Downloads', 'nav.contacto':'Contact',
     'nav.party':'🎉 Party Mode',
     'lang.modal.title':'Choose your language',
     'lang.modal.text':'Which language would you like to view the page in?',
@@ -297,6 +318,12 @@ const translations = {
     'emu.fullscreen':'Full screen',
     'emu.hint':'Click "Load emulator here".',
     'emu.alert':'First load the emulator here using "Load emulator here".',
+    'downloads.title':'📥 Downloads',
+    'downloads.text':'Files I\'ve uploaded to the repository, ready to download.',
+    'downloads.loading':'Loading file list…',
+    'downloads.empty':'No files available yet.',
+    'downloads.error':'Could not load the file list. Try again later.',
+    'downloads.btn':'Download',
     'contact.title':'📲 Contact',
     'footer.text':'© 2025 Delfi — Vocaloid Design',
     'points':'Points',
@@ -321,6 +348,7 @@ function refreshDynamicText(){
   if(scoreEl && window.catchScore !== undefined) scoreEl.textContent = t('points') + ': ' + window.catchScore;
   const snakeScoreEl = document.getElementById('snakeScore');
   if(snakeScoreEl && window.snakePoints !== undefined) snakeScoreEl.textContent = t('points') + ': ' + window.snakePoints;
+  if(typeof window.renderDownloadsList === 'function') window.renderDownloadsList();
 }
 
 function applyLanguage(lang){
@@ -386,6 +414,71 @@ function closeLangModal(){
       // Si el servicio externo falla, usamos un conteo solo local como respaldo
       countEl.textContent = localFallback() + ' *';
     }
+  })();
+})();
+
+/* ===== DESCARGAS (lee archivos directo del repo en GitHub) ===== */
+(function(){
+  // Ajusta estos 3 valores si cambias de repo, rama o carpeta
+  const GH_OWNER  = 'delfi2000xd-dotcom';
+  const GH_REPO   = 'mi-pagina-delfi';
+  const GH_BRANCH = 'main';
+  const GH_FOLDER = 'descargas'; // carpeta dentro del repo donde subes los archivos
+
+  const listEl = document.getElementById('downloadsList');
+  window.downloadsFiles = null; // cache para poder re-renderizar al cambiar idioma
+
+  function formatSize(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+  }
+
+  window.renderDownloadsList = function(){
+    if(!listEl) return;
+    const files = window.downloadsFiles;
+    if(files === null) return; // aún cargando
+    if(files === 'error'){
+      listEl.textContent = t('downloads.error');
+      return;
+    }
+    if(files.length === 0){
+      listEl.textContent = t('downloads.empty');
+      return;
+    }
+    listEl.innerHTML = '';
+    files.forEach(file => {
+      const item = document.createElement('div');
+      item.className = 'download-item';
+      item.innerHTML = `
+        <div class="dl-info">
+          <span class="dl-name">📄 ${file.name}</span>
+          <span class="dl-size">${formatSize(file.size)}</span>
+        </div>
+        <a class="btn" href="${file.download_url}" download="${file.name}" rel="noopener">${t('downloads.btn')}</a>
+      `;
+      listEl.appendChild(item);
+    });
+  };
+
+  (async ()=>{
+    try {
+      const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FOLDER}?ref=${GH_BRANCH}`;
+      const res = await fetch(apiUrl);
+      if(!res.ok){
+        // Carpeta vacía o no creada todavía = la tratamos como "sin archivos" en vez de error
+        if(res.status === 404){ window.downloadsFiles = []; }
+        else { throw new Error('GitHub API error ' + res.status); }
+      } else {
+        const data = await res.json();
+        window.downloadsFiles = Array.isArray(data)
+          ? data.filter(f => f.type === 'file').sort((a,b)=> a.name.localeCompare(b.name))
+          : [];
+      }
+    } catch(e){
+      window.downloadsFiles = 'error';
+    }
+    window.renderDownloadsList();
   })();
 })();
 
